@@ -3,10 +3,12 @@
 #define HOTEL_H
 #include "Room.h"
 #include "Record.h"
+#include "Operation.h"
 
 class Hotel {
 	std::vector<Room> rooms;
 	std::vector<Record> records;
+	std::vector<Operation*> operations;
 
 	Room* find_room(int number);
 public:
@@ -20,6 +22,14 @@ public:
 
 	Room* get_room(int number);
 	void add_record(Record r);
+
+	std::vector<Room> get_rooms();
+
+	void remove_rooms();
+	void remove_records();
+	
+	void add_operation(Operation* op);
+	Operation* find_operation(std::string name);
 
 	bool has_record_for_room(int room);
 };

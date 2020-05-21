@@ -16,6 +16,14 @@ Room& Record::get_room() {
 	return room;
 }
 
+int Record::get_beds_taken() {
+	return beds_taken;
+}
+
+Record::Type Record::get_type() {
+	return type;
+}
+
 Record& Record::operator=(const Record& other) {
 
 	start_date = other.start_date;

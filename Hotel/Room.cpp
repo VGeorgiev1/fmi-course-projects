@@ -3,6 +3,8 @@
 
 Room::Room(int beds, int number) : beds(beds), number(number) {}
 
+Room::Room() : beds(0), number(0) {};
+
 int Room::get_number() {
 	return number;
 }

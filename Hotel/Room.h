@@ -5,9 +5,9 @@
 class Room {
 	int beds;
 	int number;
-	std::string note;
 public:
 	Room(int beds, int number);
+	Room();
 
 	int get_number();
 	int get_beds();

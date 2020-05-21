@@ -23,6 +23,8 @@ public:
 	Date get_finish_date();
 	Room& get_room();
 	std::string get_note();
+	Type get_type();
+	int get_beds_taken();
 
 	Record& operator=(const Record& other);
 };
