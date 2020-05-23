@@ -2,7 +2,7 @@
 #ifndef SAVE_H
 #define SAVE_H
 
-#include "FileOperation.h";
+#include "FileOperation.h"
 #include <iostream>
 
 class Save : public FileOperation {

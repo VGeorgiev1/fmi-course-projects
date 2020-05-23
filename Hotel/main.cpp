@@ -12,8 +12,13 @@ int main() {
 	hotel.add_operation(new Checkout(hotel));
 	hotel.add_operation(new Report(hotel));
 	hotel.add_operation(new Find(hotel));
+	hotel.add_operation(new Findem(hotel));
 	hotel.add_operation(new Unavailable(hotel));
+	hotel.add_operation(new Help(hotel));
 
+
+	hotel.add_room(Room(2, 500));
+	hotel.add_room(Room(4, 600));
 
 	while (true) {
 		std::string command;

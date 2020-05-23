@@ -13,3 +13,5 @@
 #include "Unavailable.h"
 #include "Availability.h"
 #include "Report.h"
+#include "Findem.h"
+#include "Help.h"

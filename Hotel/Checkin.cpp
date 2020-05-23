@@ -6,17 +6,33 @@ Checkin::Checkin(Hotel& h)
 	: HotelOperation(h, "checkin") {};
 
 void Checkin::execute() {
-	std::string start_date, end_date, note;
-	int room, beds;
+	std::string start_date, end_date, note, note_and_beds;
+	int room, beds = 0;
 
 	std::cin >> room >> start_date >> end_date;
-	std::getline(std::cin, note);
-	std::cin >> beds;
+	std::getline(std::cin, note_and_beds);
+
+	int idx = 1;
+	while (idx < note_and_beds.size() && note_and_beds[idx] != ' ') {
+		idx++;
+	}
+
+	note = note_and_beds.substr(1, idx);
+
 
 	Date start(start_date), end(end_date);
 
 
 	Room* r = hotel_.get_room(room);
+	
+	if (idx != note.size() - 1) {
+		beds = std::stoi(note_and_beds.substr(idx));
+	}
+	else {
+		beds = r->get_beds();
+	}
+
+
 	if (start > end) {
 		std::cout << "Start date cannot be after end date!" << std::endl;
 		return;
@@ -26,11 +42,22 @@ void Checkin::execute() {
 		return;
 	}
 
+	if (r == nullptr) {
+		std::cout << "Room not found" << std::endl;
+		return;
+	}
 
-	if (r != nullptr && !hotel_.has_record_for_room(r->get_number())) {
-		hotel_.add_record(Record(start, end, note, *r, beds, Record::Type::CHECKIN));
+	if (hotel_.room_is_cheked_in(r->get_number())) {
+		std::cout << "Room is cheked in" << std::endl;
+		return;
 	}
-	else {
-		std::cout << "Room not found or already is checkin!";
+
+	if (hotel_.is_unavailable_for_period(room, start, end)) {
+		std::cout << "Room is unavailable for tha period." << std::endl;
+		return;
 	}
+
+	
+	hotel_.add_record(Record(start, end, note, *r, beds, Record::Type::CHECKIN));
+	
 }

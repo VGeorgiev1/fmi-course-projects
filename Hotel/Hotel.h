@@ -21,7 +21,14 @@ public:
 	std::vector<Room> get_unrecorded_rooms();
 
 	Room* get_room(int number);
+	Room* get_most_fitting_room(int requested_beds, Date start, Date end, int room_to_skip);
+	
+	bool is_unavailable_for_period(int room, Date start, Date end);
+
 	void add_record(Record r);
+	Record* get_check_in_for_room(int room);
+
+	void change_room(Room* room_swap, Room* room_to_swap);
 
 	std::vector<Room> get_rooms();
 
@@ -31,7 +38,7 @@ public:
 	void add_operation(Operation* op);
 	Operation* find_operation(std::string name);
 
-	bool has_record_for_room(int room);
+	bool room_is_cheked_in(int room);
 };
 
 

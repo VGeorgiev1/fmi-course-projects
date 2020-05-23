@@ -20,6 +20,7 @@ int Record::get_beds_taken() {
 	return beds_taken;
 }
 
+
 Record::Type Record::get_type() {
 	return type;
 }

@@ -17,7 +17,7 @@ void Unavailable::execute() {
 
 	Room* r = hotel_.get_room(room);
 
-	if (r != nullptr && !hotel_.has_record_for_room(r->get_number())) {
+	if (r != nullptr) {
 		hotel_.add_record(Record(start, end, note, *r, r->get_beds(), Record::Type::UNAVAILABLE));
 	}
 	else {
