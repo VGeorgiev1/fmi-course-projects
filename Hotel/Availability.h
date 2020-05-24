@@ -8,4 +8,4 @@ public:
 	void execute();
 };
 
-#endif AVAILABILITY_H
+#endif

@@ -1,6 +1,6 @@
 #ifndef FIND_H
 #define FIND_H
-#include "HotelOperation.h";
+#include "HotelOperation.h"
 
 
 class Find : public HotelOperation {

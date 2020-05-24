@@ -1,6 +1,6 @@
 #ifndef CHECKIN_H
 #define CHECKIN_H
-#include "HotelOperation.h";
+#include "HotelOperation.h"
 
 
 class Checkin : public HotelOperation {

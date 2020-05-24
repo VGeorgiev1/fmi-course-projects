@@ -3,7 +3,7 @@
 #ifndef OPEN_H
 #define OPEN_H
 
-#include "FileOperation.h";
+#include "FileOperation.h"
 #include <iostream>
 
 class Open : public FileOperation {

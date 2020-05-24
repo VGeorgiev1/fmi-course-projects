@@ -1,5 +1,5 @@
 #include "Hotel.h"
-
+#include <limits.h>
 
 Room* Hotel::find_room(int number) {
 

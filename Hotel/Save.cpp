@@ -25,8 +25,11 @@ void Save::execute() {
 	file.write((char*)&records_size, sizeof(int));
 
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		file.write((char*)&((*it).get_start_date()), sizeof(Date));
-		file.write((char*)&((*it).get_finish_date()), sizeof(Date));
+		Date start = (*it).get_start_date();
+		Date end = (*it).get_finish_date();
+		
+		file.write((char*)&(start), sizeof(Date));
+		file.write((char*)&(end), sizeof(Date));
 		
 		int note_size = (*it).get_note().size();
 		std::string note = (*it).get_note();
