@@ -17,6 +17,7 @@ public:
 	bool operator!=(const Date& other);
 	bool operator <=(const Date& other);
 	bool operator >=(const Date& other);
+	int operator-(const Date& other);
 	friend std::ostream& operator <<(std::ostream& os, const Date& dt);
 
 	int get_year() const;

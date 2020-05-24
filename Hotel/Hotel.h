@@ -1,18 +1,23 @@
 #ifndef HOTEL_H
-#include <vector>
 #define HOTEL_H
+#include <vector>
 #include "Room.h"
 #include "Record.h"
 #include "Operation.h"
+
 
 class Hotel {
 	std::vector<Room> rooms;
 	std::vector<Record> records;
 	std::vector<Operation*> operations;
-
+	bool ready_to_operate;
 	Room* find_room(int number);
 public:
 	Hotel();
+
+	void set_operatable(bool value);
+	bool can_operate();
+
 
 	void remove_record(std::vector<Record>::iterator it);
 	void add_room(Room r);

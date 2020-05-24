@@ -12,6 +12,10 @@ Room* Hotel::find_room(int number) {
 }
 Hotel::Hotel() {}
 
+void Hotel::set_operatable(bool value) {
+	ready_to_operate = value;
+}
+
 void Hotel::remove_record(std::vector<Record>::iterator it) {
 	records.erase(it);
 }
@@ -69,6 +73,10 @@ std::vector<Room> Hotel::get_unrecorded_rooms() {
 	return res;
 }
 
+bool Hotel::can_operate() {
+	return ready_to_operate;
+}
+
 Record* Hotel::get_check_in_for_room(int room) {
 	
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
@@ -95,9 +103,13 @@ bool Hotel::is_unavailable_for_period(int room, Date start, Date end) {
 
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
 		if (it->get_room().get_number() == room && it->get_type() == Record::Type::UNAVAILABLE) {
-			if (it->get_start_date() < start || it->get_finish_date() > end) {
+			
+			if (it->get_start_date() >= start || it->get_finish_date() <= end
+				|| (it->get_start_date() <= start && it->get_finish_date() >= end))
+			{
 				return true;
 			}
+
 		}
 	}
 	
@@ -138,6 +150,7 @@ Operation* Hotel::find_operation(std::string name) {
 			return *it;
 		}
 	}
+	return nullptr;
 }
 
 bool Hotel::room_is_cheked_in(int room) {

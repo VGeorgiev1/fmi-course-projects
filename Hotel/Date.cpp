@@ -63,6 +63,15 @@ bool Date::operator==(const Date& other) {
 	}
 	return false;
 }
+int Date::operator-(const Date& other) {
+	int year_dates = (year - other.year) * 365;
+	int month_date = (month - other.month) * 30;
+	int days = (date - other.date) * 1;
+
+
+
+	return (year_dates + month_date + days);
+}
 bool Date::operator!=(const Date& other) {
 	return !(*this == other);
 }

@@ -10,6 +10,7 @@ class Open : public FileOperation {
 public:
 	Open(Hotel& h);
 	void execute();
+	bool file_opened();
 };
 
 

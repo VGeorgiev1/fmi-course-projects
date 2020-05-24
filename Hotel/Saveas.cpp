@@ -12,9 +12,16 @@ void Saveas::execute() {
 
 	std::cin >> name;
 
-	file_name = name;
+	FileOperation* op = (FileOperation*)(hotel_.find_operation("save"));
 
-	Save(hotel_).execute();
+	
+
+	if(op != nullptr) {
+
+		op->set_file_name(name);
+
+		op->execute();
+	}
 
 }
 

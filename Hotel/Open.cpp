@@ -3,20 +3,43 @@
 #include <stdio.h>
 
 Open::Open(Hotel& h)
-	: FileOperation(h, "save") {};
+	: FileOperation(h, "open") {};
 
 
 void Open::execute() {
 
 	std::string file_name;
 
-	std::cin >> file_name;
+	std::cout << this->file_name << std::endl;
 
+	std::cin >> file_name;
+	
 	std::ifstream file(file_name, std::ios::in | std::ios::binary);
 
+
 	if(!file.is_open()) {
-		//throw std::No
+		std::ofstream new_file(file_name, std::ios::out | std::ios::binary);
+		if(!new_file.is_open()) {
+			std::cout << "File " << file_name << " could not be opened or created! " << std::endl;
+			return;
+		}
+		int empty_file = 0;
+		new_file.write((char*) &(empty_file), sizeof(int));
+		std::cout << "File " << file_name << " successfuly created!" << std::endl;
+		hotel_.set_operatable(true);
+
+		return;
 	}
+
+	FileOperation* save = (FileOperation*)(hotel_.find_operation("save"));
+	FileOperation* close = (FileOperation*)(hotel_.find_operation("close"));
+
+	if(save != nullptr && close != nullptr) {
+		save->set_file_name(file_name);
+		close->set_file_name(file_name);
+	}
+
+	set_file_name(file_name);
 
 	this->file_name = file_name;
 
@@ -26,6 +49,12 @@ void Open::execute() {
 	int rooms_size = 0;
 
 	file.read((char*) &rooms_size, sizeof(int));
+
+	if(rooms_size == 0) {
+		std::cout << "File " << file_name << " opened successfully!" << std::endl;
+		hotel_.set_operatable(true);
+		return;
+	}
 
 	for (int i = 0; i < rooms_size; i++) {
 		Room r;
@@ -66,10 +95,15 @@ void Open::execute() {
 		int beds_taken = 0;
 		file.read((char*)&beds_taken, sizeof(int));
 
-		hotel_.add_record(Record(start, finish, note, *(hotel_.get_room(rooms_size)), beds_taken, t));
+		hotel_.add_record(Record(start, finish, note, *(hotel_.get_room(room_number)), beds_taken, t));
 	}
 
 	file.close();
+	hotel_.set_operatable(true);
+	std::cout << "File " << file_name << " opened successfully!" << std::endl;
 
 }
 
+bool Open::file_opened() {
+	return file_name.size() == 0;
+}

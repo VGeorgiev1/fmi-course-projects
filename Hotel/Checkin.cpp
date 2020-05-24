@@ -24,9 +24,9 @@ void Checkin::execute() {
 
 
 	Room* r = hotel_.get_room(room);
-	
-	if (idx != note.size() - 1) {
-		beds = std::stoi(note_and_beds.substr(idx));
+
+	if (idx != note_and_beds.size()) {
+		beds = std::stoi(note_and_beds.substr(idx + 1));
 	}
 	else {
 		beds = r->get_beds();

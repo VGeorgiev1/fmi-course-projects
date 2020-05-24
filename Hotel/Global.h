@@ -10,6 +10,7 @@
 #include "Exit.h"
 #include "Find.h"
 #include "Saveas.h"
+#include "Save.h"
 #include "Unavailable.h"
 #include "Availability.h"
 #include "Report.h"

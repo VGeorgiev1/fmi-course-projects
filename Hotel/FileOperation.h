@@ -9,6 +9,7 @@ protected:
 	std::string file_name = "";
 public:
 	FileOperation(Hotel& hotel, std::string name);
+	void set_file_name(std::string file);
 };
 
 #endif 

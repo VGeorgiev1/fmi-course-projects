@@ -6,6 +6,7 @@ int main() {
 	hotel.add_operation(new Open(hotel));
 	hotel.add_operation(new Close(hotel));
 	hotel.add_operation(new Saveas(hotel));
+	hotel.add_operation(new Save(hotel));
 	hotel.add_operation(new Exit(hotel));
 	hotel.add_operation(new Checkin(hotel));
 	hotel.add_operation(new Availability(hotel));
@@ -15,19 +16,23 @@ int main() {
 	hotel.add_operation(new Findem(hotel));
 	hotel.add_operation(new Unavailable(hotel));
 	hotel.add_operation(new Help(hotel));
-
-
-	hotel.add_room(Room(2, 500));
-	hotel.add_room(Room(4, 600));
+	
 
 	while (true) {
 		std::string command;
 
 		std::cin >> command;
 
+		if(command != "open" && !hotel.can_operate()) {
+			std::cout << "You must open a file first!" << std::endl;
+			continue;
+		}
+
 		Operation* op = hotel.find_operation(command);
 
-		op -> execute();
+		if(op != nullptr) {
+			op -> execute();
+		}
 		
 	}
 }

@@ -5,13 +5,19 @@
 Save::Save(Hotel& h)
 	: FileOperation(h, "save") {};
 
-
 void Save::execute() {
 	std::vector<Room> rooms = hotel_.get_rooms();
 	std::vector<Record> records = hotel_.get_records();
 
-
 	std::ofstream file(file_name, std::ios::out | std::ios::binary);
+
+	std::cout << file_name << std::endl;
+
+	if(!file.is_open()) {
+
+		std::cout << "File not opened correctly!" << std::endl;
+		return;
+	}
 
 	int rooms_size = rooms.size();
 	int records_size = records.size();
@@ -54,6 +60,6 @@ void Save::execute() {
 
 	file.close();
 
-	std::cout << "Successfully saved " << file_name;
+	std::cout << "Successfully saved " << file_name << std::endl;
 }
 
