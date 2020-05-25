@@ -9,7 +9,6 @@ public:
 	Operation(std::string _name);
 	std::string get_name() const;
 	virtual void execute() = 0;
-
 };
 
 

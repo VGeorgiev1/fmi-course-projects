@@ -5,9 +5,8 @@
 
 class Childn : public XMLOperation {
 public:
-	Childn(Node& h);
+	Childn(Node* h);
 	void execute();
-    Node* recursive_search(Node* n,std::string id);
 };
 
 #endif

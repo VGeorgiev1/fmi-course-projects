@@ -5,9 +5,8 @@
 
 class Select : public XMLOperation {
 public:
-	Select(Node& h);
+	Select(Node* h);
 	void execute();
-	void recursive_search(Node n, std::string id, std::string key);
 };
 
 #endif

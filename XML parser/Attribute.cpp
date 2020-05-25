@@ -9,10 +9,10 @@ std::string Attribute::get_name() {
 std::string Attribute::get_value() {
     return value;
 }
-void set_name(std::string new_name) {
-    name = new_name
+void Attribute::set_name(std::string new_name) {
+    name = new_name;
 }
     
-void set_value(std::string new_value) {
+void Attribute::set_value(std::string new_value) {
     value = new_value;
 }

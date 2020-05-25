@@ -28,7 +28,7 @@ std::string Node::get_id() {
     return id;
 }
 
-void Node::add_child(Node node) {
+void Node::add_child(Node* node) {
     children.push_back(node);
 }
 
@@ -36,7 +36,7 @@ bool Node::has_children() {
     return children.size() > 0;
 }
 
-std::vector<Node> Node::get_children() {
+std::vector<Node*> Node::get_children() {
     return children;
 }
 
@@ -49,8 +49,7 @@ std::vector<Attribute> Node::get_attributes() {
 }
 
 Attribute* Node::get_attribute(std::string name) {
-    std::vector<Attribute>::iterator it;
-    for (it = attibutes.begin(); it != attibutes.end(); ++it) {
+    for (std::vector<Attribute>::iterator it = attibutes.begin(); it != attibutes.end(); ++it) {
         if (name == it->get_name()) {
             return &(*it);
             break;
@@ -58,3 +57,12 @@ Attribute* Node::get_attribute(std::string name) {
     }
     return nullptr;
 }
+
+void Node::remove_attribute(std::string name) {
+    for (std::vector<Attribute>::iterator it = attibutes.begin(); it != attibutes.end(); ++it) {
+        if (name == it->get_name()) {
+            attibutes.erase(it);
+            break;
+        }
+    }
+};

@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-Select::Select(Node& h)
+Select::Select(Node* h)
 	: XMLOperation(h, "select") {};
 
 void Select::execute() {
@@ -10,27 +10,15 @@ void Select::execute() {
 
 	std::cin >> id >> key;
 
-	recursive_search(parent_node, id, key);
-}
+	Node* n = recursive_search(parent_node, id);
 
-void Select::recursive_search(Node n, std::string id, std::string key) {
+	Attribute* atr = n->get_attribute(key);
 
-	Attribute* atr = n.get_attribute(key);
-
-	if(n.get_id() == id && atr != nullptr) {
-		std::cout << "Node " << n.get_name() << ", attribute: " << atr->get_name() << " value: " << atr->get_value();
-	}
-
-	if(!n.has_children()) {
+	if (atr != nullptr) {
+		std::cout << "Node " << n->get_name() << ", attribute: " << atr->get_name() << " value: " << atr->get_value();
 		return;
 	}
 
-	std::vector<Node> children = n.get_children();
-
-	for(std::vector<Node>::iterator it = children.begin(); it != children.end(); ++it) {
-		recursive_search(*it, id, key);
-	}
-
+	std::cout << "Node " << n->get_name() << "has no attribute: " << key;
 	return;
-
 }
