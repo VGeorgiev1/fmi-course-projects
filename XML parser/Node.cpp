@@ -48,13 +48,13 @@ std::vector<Attribute> Node::get_attributes() {
     return attibutes;
 }
 
-Attribute Node::get_attribute(std::string name) {
+Attribute* Node::get_attribute(std::string name) {
     std::vector<Attribute>::iterator it;
     for (it = attibutes.begin(); it != attibutes.end(); ++it) {
-        if (name.compare(it->get_name())) {
-            return *it;
+        if (name == it->get_name()) {
+            return &(*it);
             break;
         }
     }
-    std::cout << "Iterator not found!";
+    return nullptr;
 }

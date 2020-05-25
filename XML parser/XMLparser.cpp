@@ -34,27 +34,42 @@ XMLParser::XMLParser(std::string filename) {
 void XMLParser::move_to_text(std::string line, int& idx) {
     while (line[idx] == ' ' && idx < line.size() - 1) { idx++; };
 }
-void XMLParser::move_to_ws_or_closing_arrow(std::string line, int& idx) {
-    while (line[idx] != ' ' && line[idx] != '>' && idx < line.size() - 1) {
+void XMLParser::move_to_symbol(std::string line, int& idx,const char* symbols,  int symbols_lenght) {
+    bool break_loop = false;
+
+    while (idx < line.size() - 1) {
+        for(int i = 0;i < symbols_lenght; i++) {
+           if(line[idx] == symbols[i]) {
+                break_loop = true;
+                break;
+           }
+        }
+        if(break_loop) {
+            break;
+        };
         idx++;
     }
 }
-void XMLParser::move_to_endl_or_opening_arrow(std::string line, int& idx) {
-    while (line[idx] != '<' && idx < line.size() - 1) {
-        idx++;
+
+void XMLParser::add_operation(Operation* op) {
+    operations.push_back(op);
+}
+
+Operation* XMLParser::get_operation(std::string name) {
+    for(std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
+       if((*it)->get_name() == name) {
+           return *it;
+       }
     }
+    return nullptr;
 }
-void XMLParser::move_to_euqal(std::string line, int& idx) {
-    while (line[idx++] != '=' && idx < line.size() - 1);
-}
-void XMLParser::move_to_quote(std::string line, int& idx) {
-    while (line[idx++] != '"' && idx < line.size() - 1);
-}
+
 Node XMLParser::parse() {
     this->file.open(this->filename);
+    Node node;
 
     if (this->file.is_open()) {
-
+        int idx = 0;
         std::vector<Node> n_stack;
         std::vector<Node> all_nodes;
 
@@ -63,10 +78,8 @@ Node XMLParser::parse() {
 
         for (std::string line; getline(this->file, line);) {
             int idx = 0;
-
             while (idx < line.size() - 1) {
                 move_to_text(line, idx);
-
                 if (line[idx] == '>') {
                     in_attr_def = false;
                     idx++;
@@ -76,7 +89,8 @@ Node XMLParser::parse() {
                     if (line[idx + 1] == '/') {
                         idx++;
                         int start = idx + 1;
-                        move_to_ws_or_closing_arrow(line, idx);
+                        move_to_symbol(line, idx, " >", 2);
+                        //move_to_ws_or_closing_arrow(line, idx);
                         std::string name = line.substr(start, idx - start);
                         if (n_stack.back().get_name() == name) {
                             if (n_stack.back().get_id() == "") {
@@ -95,12 +109,11 @@ Node XMLParser::parse() {
                         in_attr_def = true;
                         move_to_text(line, idx);
                         int start = idx + 1;
-                        move_to_ws_or_closing_arrow(line, idx);
+                        move_to_symbol(line, idx, " >", 2);
                         std::string name = line.substr(start, idx - start);
                         if (line[idx] == '>') {
                             in_attr_def = false;
                         }
-
                         Node new_node(name);
 
                         n_stack.push_back(new_node);
@@ -108,24 +121,26 @@ Node XMLParser::parse() {
                     }
                 }
                 else {
+
                     if (in_attr_def) {
                         if (line.find('=') == -1) {
                             throw std::invalid_argument("Invalid attributes!");
                         }
                         else {
                             int start = idx;
-                            move_to_euqal(line, idx);
-                            std::string attr_name = line.substr(start, idx - start - 1);
-                            move_to_text(line, idx);
+                            move_to_symbol(line, idx, "=", 1);
+                            
+                            std::string attr_name = line.substr(start, idx - start);
+                            move_to_symbol(line, idx, "\"", 1);
                             if (line[idx] != '"') {
                                 throw std::invalid_argument("Invalid attribute value!");
                             }
                             else {
                                 idx++;
                                 start = idx;
-                                move_to_quote(line, idx);
-                                std::string attr_value = line.substr(start, idx - start - 1);
+                                move_to_symbol(line, idx, "\"", 1);
 
+                                std::string attr_value = line.substr(start, idx - start);
                                 if (attr_name == "id") {
                                     if (id_exists(attr_value, all_nodes)) {
                                         attr_value = generate_unique_id(attr_value, all_nodes);
@@ -134,16 +149,17 @@ Node XMLParser::parse() {
                                     all_nodes.back().set_id(attr_value);
                                 }
                                 n_stack.back().add_attribute(attr_name, attr_value);
-                                if (line[idx] == '>') {
+                                if (line[idx + 1] == '>') {
                                     in_attr_def = false;
                                 }
+                                idx++;
                             }
                         }
                     }
                     else {
                         int start = idx;
-                        move_to_endl_or_opening_arrow(line, idx);
-                        if (idx == line.size() - 1) {
+                        move_to_symbol(line, idx, "<", 1);
+                        if (idx == line.size()) {
                             idx++;
                         }
                         std::string text = line.substr(start, idx - start);
@@ -155,5 +171,7 @@ Node XMLParser::parse() {
         }
 
         return n_stack.back();
+        return node;
     }
+    return node;
 }

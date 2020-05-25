@@ -5,6 +5,7 @@
 #include <fstream>
 #include "Node.h"
 #include "XMLparser.h"
+#include "Select.h"
 
 using namespace std;
 
@@ -32,5 +33,19 @@ int main() {
 
     Node parent = xml.parse();
 
-    print_tree(parent);
+    xml.add_operation(new Select(parent));
+
+    while(true) {
+        std::string op_name;
+
+        std::cin >> op_name;
+
+        Operation* op = xml.get_operation(op_name);
+
+        if(op != nullptr) {
+            op->execute();
+        }
+
+    }
+
 }

@@ -10,6 +10,9 @@ public:
     Attribute(std::string name, std::string value);
     std::string get_name();
     std::string get_value();
+
+    void set_name(std::string name);
+    void set_value(std::string value);
 };
 
 

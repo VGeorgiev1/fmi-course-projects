@@ -26,7 +26,7 @@ public:
     std::vector<Node> get_children();
     void add_attribute(std::string name, std::string value);
     std::vector<Attribute> get_attributes();
-    Attribute get_attribute(std::string name);
+    Attribute* get_attribute(std::string name);
 };
 
 #endif
