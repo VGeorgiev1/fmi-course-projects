@@ -19,7 +19,50 @@ std::string XMLParser::generate_unique_id(std::string cur_id, std::vector<Node*>
     };
     return (cur_id += "_" + std::to_string(id_suffix));
 }
+void XMLParser::print(std::ostream& stream) {
+    print_recursion(0, stream);
+};
 
+void XMLParser::print_recursion(int tabs, std::ostream& stream) {
+    for (int i = 0; i < tabs; i++) {
+        stream << '\t';
+    }
+
+    stream << '<' << parent_node->get_name();
+
+    std::vector<Attribute> atrs = parent_node->get_attributes();
+
+    for (std::vector<Attribute>::iterator it = atrs.begin(); it != atrs.end(); ++it) {
+        stream << ' ' << it->get_name() << "=" << "\"" << it->get_value() << "\"";
+    }
+
+    stream << "> ";
+
+    if (parent_node->get_value() == "") {
+        stream << std::endl;
+    }
+    else {
+        stream << parent_node->get_value().substr(0, parent_node->get_value().size() - 1);
+    }
+
+    if (!parent_node->has_children()) {
+        stream << "<\/" << parent_node->get_name() << ">" << std::endl;
+        return;
+    }
+
+    std::vector<Node*> children = parent_node->get_children();
+
+
+    for (std::vector<Node*>::iterator it = children.begin(); it != children.end(); ++it) {
+        print_recursion(tabs + 1, stream);
+    }
+
+    for (int i = 0; i < tabs; i++) {
+        stream << '\t';
+    }
+
+    stream << "</" << parent_node->get_name() << ">" << std::endl;
+};
 
 
 bool XMLParser::id_exists(std::string id, std::vector<Node*> vec) {
@@ -30,8 +73,8 @@ bool XMLParser::id_exists(std::string id, std::vector<Node*> vec) {
     }
     return false;
 }
-XMLParser::XMLParser(std::string filename) {
-    this->filename = filename;
+XMLParser::XMLParser() {
+    parent_node = nullptr;
     current_id = 0;
 };
 
@@ -78,7 +121,7 @@ void XMLParser::add_operation(Operation* op) {
     operations.push_back(op);
 }
 
-Operation* XMLParser::get_operation(std::string name) {
+Operation* XMLParser::find_operation(std::string name) {
     for(std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
        if((*it)->get_name() == name) {
            return *it;
@@ -87,11 +130,45 @@ Operation* XMLParser::get_operation(std::string name) {
     return nullptr;
 }
 
-Node* XMLParser::parse() {
-    this->file.open(this->filename);
+void XMLParser::remove_children(Node* node) {
+
+    if (!node->has_children()) {
+        return;
+    }
+
+    std::vector<Node*> children = node->get_children();
+
+    for (std::vector<Node*>::iterator it = children.begin(); it != children.end(); ++it) {
+        remove_children(*it);
+        delete* it;
+    }
+
+    children.clear();
+}
+
+void XMLParser::remove_nodes() {
+    remove_children(parent_node);
+};
+
+Node* XMLParser::get_parent() {
+    return parent_node;
+}
+
+bool XMLParser::is_operatable(){
+    return operatable;
+}
+
+void XMLParser::set_operatable(bool state) {
+    operatable = state;
+}
+
+Node* XMLParser::parse(std::string name) {
+    std::ifstream file;
+
+    file.open(name);
 
 
-    if (!this->file.is_open()) {
+    if (!file.is_open()) {
         throw std::invalid_argument("File cannot be opened!");
     }
 
@@ -102,8 +179,10 @@ Node* XMLParser::parse() {
     bool in_attr_def = false;
     bool name_done = false;
 
-    for (std::string line; getline(this->file, line);) {
+    for (std::string line; getline(file, line);) {
         int idx = 0;
+        if (line.size() == 0) continue;
+
         while (idx < line.size() - 1) {
             move_to_text(line, idx);
             if (line[idx] == '>') {
@@ -127,6 +206,7 @@ Node* XMLParser::parse() {
                         current_id++;
                         all_nodes.back()->set_id(id);
                         n_stack.back()->set_id(id);
+                        n_stack.back()->add_attribute("id", id);
                     }
                     create_branch(n_stack);
                 }
@@ -188,5 +268,7 @@ Node* XMLParser::parse() {
             }
         }
     }
-    return n_stack.back();
+
+    parent_node = n_stack.back();
+    return parent_node;
 }

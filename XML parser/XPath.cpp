@@ -8,7 +8,9 @@ XPATH::XPATH(Node* h)
 void XPATH::execute() {
 	std::string query;
 
-	std::cin >> query;
+    std::getline(std::cin, query);
+    query = query.substr(1);
+    
     std::string token;
 
     std::stringstream str(query);
@@ -49,21 +51,71 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
 
     std::vector<Attribute> attrs;
 
-    int prop_start = current_name.find('(');
+    int prop_start = current_name.find('(') + 1;
     int prop_end = current_name.find(')');
 
-    std::string props;
-
+    std::vector<Attribute> atrs;
     if (prop_start != std::string::npos) {
-        props = current_name.substr(prop_start + 1, prop_start - prop_end);
 
-        if (props[0] == '@') {
+        int cursor = prop_start;
 
+        while (cursor < prop_end) {
+            int cursor_start = cursor;
+
+            if (current_name[cursor] != '@') {
+                throw std::invalid_argument("XPath is wrong!");
+            }
+
+            cursor++;
+
+            while (current_name[cursor] != '=' && current_name[cursor] != ')' && current_name[cursor] != ' ') {
+                cursor++;
+            }
+
+            std::string atr_name = current_name.substr(cursor_start + 1, cursor - cursor_start - 1);
+
+            char end = current_name[cursor];
+            if (end != '=' && cursor != current_name.size() - 1) {
+                throw std::invalid_argument("XPath is wrong!");
+            }
+
+            if (cursor == current_name.size()) break;
+            cursor++;
+
+
+            if (end != '=') {
+                atrs.push_back(Attribute(atr_name, ""));
+                continue;
+            }
+
+
+            int atr_value_start = cursor;
+
+            while (current_name[cursor] != ')' && current_name[cursor] != ' ') {
+                cursor++;
+            }
+
+            std::string atr_value = current_name.substr(atr_value_start, cursor - atr_value_start);
+
+            atrs.push_back(Attribute(atr_name, atr_value));
+            cursor++;
         }
 
     }
 
+    if (atrs.size() != 0) {
+        for (std::vector<Attribute>::iterator it = atrs.begin(); it != atrs.end(); ++it) {
+            Attribute* atr = n->get_attribute(it->get_name());
 
+            if (atr == nullptr) {
+                return;
+            }
+
+            if (it->get_value() != "" && atr->get_value() != it->get_value()) {
+                return;
+            }
+        }
+    }
 
     if (next + 1 == end) {
         results.push_back(n);
