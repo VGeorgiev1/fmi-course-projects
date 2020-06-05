@@ -5,7 +5,7 @@
 
 class Newchild : public XMLOperation {
 public:
-	Newchild(Node* h);
+	Newchild(XMLParser& h);
 	void execute();
 
 };

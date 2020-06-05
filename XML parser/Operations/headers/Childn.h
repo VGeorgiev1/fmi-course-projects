@@ -1,11 +1,11 @@
 #ifndef CHILDN_H
 #define CHILDN_H
 #include "XMLOperation.h"
-#include "Attribute.h"
+#include "../../Attribute.h"
 
 class Childn : public XMLOperation {
 public:
-	Childn(Node* h);
+	Childn(XMLParser& xml);
 	void execute();
 };
 

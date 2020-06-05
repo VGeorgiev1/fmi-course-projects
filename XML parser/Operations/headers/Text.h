@@ -4,7 +4,7 @@
 
 class Text : public XMLOperation {
 public:
-	Text(Node* h);
+	Text(XMLParser& h);
 	void execute();
 };
 

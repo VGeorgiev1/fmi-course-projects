@@ -1,9 +1,9 @@
-#include "XPath.h"
+#include "../headers/XPath.h"
 #include <iostream>
 #include <sstream>
 
-XPATH::XPATH(Node* h)
-	: XMLOperation(h, "xpath") {};
+XPATH::XPATH(XMLParser& xml)
+	: XMLOperation(xml, "xpath") {};
 
 void XPATH::execute() {
 	std::string query;
@@ -23,10 +23,10 @@ void XPATH::execute() {
     }
     std::vector<Node*> results;
 
-    xpath_recursive_search(parent_node, tokens.begin(), tokens.end(), INT_MAX, results);
+    xpath_recursive_search(xml.get_parent(), tokens.begin(), tokens.end(), INT_MAX, results);
 
     for (std::vector<Node*>::iterator it = results.begin(); it != results.end(); ++it) {
-        std::cout << (*it)->get_name() << " " << (*it)->get_id();
+        xml.print_recursion(0, std::cout, (*it));
     }
 }
 

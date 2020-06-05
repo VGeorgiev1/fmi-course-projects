@@ -1,4 +1,4 @@
-#include "Close.h"
+#include "../headers/Close.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -13,7 +13,7 @@ void Close::execute() {
 	FileOperation* save = (FileOperation*)(parser.find_operation("save"));
 
 	if(save != nullptr) {
-		save->set_file_name(file_name);
+		save->set_file_name("");
 	}
 
 	parser.set_operatable(false);

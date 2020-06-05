@@ -1,8 +1,8 @@
 #ifndef PRINT_H
 #define PRINT_H
-#include "FileOperation.h"
+#include "XMLOperation.h"
 
-class Print : public FileOperation {
+class Print : public XMLOperation {
 public:
 	Print(XMLParser& parser);
 	void execute();

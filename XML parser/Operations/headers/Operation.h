@@ -1,7 +1,6 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 #include <string>
-#include "Node.h"
 
 class Operation {
 	std::string name;

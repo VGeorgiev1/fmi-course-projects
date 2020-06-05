@@ -1,9 +1,9 @@
-#include "Childn.h"
+#include "../headers/Childn.h"
 #include <iostream>
 
 
-Childn::Childn(Node* h)
-	: XMLOperation(h, "child") {};
+Childn::Childn(XMLParser& xml)
+	: XMLOperation(xml, "child") {};
 
 
 void Childn::execute() {
@@ -12,7 +12,7 @@ void Childn::execute() {
 
 	std::cin >> id >> n;
 
-    Node* searched_node = recursive_search(parent_node, id);
+    Node* searched_node = xml.recursive_search(xml.get_parent(), id);
 
     if(!(searched_node -> has_children())) {
         std::cout << "The node with this id has no children!" << std::endl;

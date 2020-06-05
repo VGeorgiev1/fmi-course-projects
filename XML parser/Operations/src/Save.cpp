@@ -1,4 +1,4 @@
-#include "Save.h"
+#include "../headers/Save.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -16,5 +16,7 @@ void Save::execute() {
 	if (stream.is_open()) {
 		parser.print(stream);
 	}
+	
+	std::cout << "File " << file_name << " was saved!" << std::endl;
 }
 

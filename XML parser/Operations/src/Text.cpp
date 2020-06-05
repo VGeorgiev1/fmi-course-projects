@@ -1,15 +1,15 @@
-#include "Text.h"
+#include "../headers/Text.h"
 
 
-Text::Text(Node* h)
-	: XMLOperation(h, "text") {};
+Text::Text(XMLParser& xml)
+	: XMLOperation(xml, "text") {};
 
 void Text::execute() {
 	std::string id;
 
 	std::cin >> id;
 
-	Node* n = recursive_search(parent_node, id);
+	Node* n = xml.recursive_search(xml.get_parent(), id);
 
 	std::string text = n->get_value();
 

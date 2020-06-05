@@ -4,7 +4,7 @@
 
 class Delete : public XMLOperation {
 public:
-	Delete(Node* h);
+	Delete(XMLParser& h);
 	void execute();
 };
 
