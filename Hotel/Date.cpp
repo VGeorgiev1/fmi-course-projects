@@ -8,6 +8,9 @@ Date::Date() : year(0), month(0), date(0) {};
 
 
 Date::Date(std::string date_string) {
+
+	int a = date_string[4];
+
 	if (date_string.find('-') == -1) {
 		throw std::invalid_argument("Invalid date!");
 	}
@@ -19,9 +22,8 @@ Date::Date(std::string date_string) {
 
 
 		std::string arg = date_string.substr(start, finish - start);
-
 		int i_arg = std::stoi(arg);
-
+			
 		if (args == 0) {
 			if (i_arg <= 0) {
 				throw std::invalid_argument("Invalid date!");
@@ -99,7 +101,7 @@ int Date::get_date() const {
 
 std::ostream& operator<<(std::ostream& os, const Date& dt)
 {
-	std::cout << dt.year << "-" << dt.month << "-" << dt.date;
+	os << dt.year << "-" << dt.month << "-" << dt.date;
 
 	return os;
 }

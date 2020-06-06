@@ -1,4 +1,4 @@
-#include "Report.h"
+#include "../headers/Report.h"
 
 Report::Report(Hotel& h)
 	: HotelOperation(h, "report") {};
@@ -9,6 +9,7 @@ void Report::execute() {
 	std::cin >> date_start >> date_end;
 
 	Date start(date_start), end(date_end);
+
 	std::vector<Record> records = hotel_.get_records();
 
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {

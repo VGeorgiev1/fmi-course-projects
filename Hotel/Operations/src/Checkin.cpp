@@ -1,4 +1,4 @@
-#include "Checkin.h"
+#include "../headers/Checkin.h"
 #include <iostream>
 
 
@@ -19,9 +19,7 @@ void Checkin::execute() {
 
 	note = note_and_beds.substr(1, idx);
 
-
 	Date start(start_date), end(end_date);
-
 
 	Room* r = hotel_.get_room(room);
 
@@ -33,17 +31,16 @@ void Checkin::execute() {
 	}
 
 
+	if (r == nullptr) {
+		return;
+	}
+
 	if (start > end) {
 		std::cout << "Start date cannot be after end date!" << std::endl;
 		return;
 	}
 	if (beds > r->get_beds()) {
 		std::cout << "This room has fewer beds!" << std::endl;
-		return;
-	}
-
-	if (r == nullptr) {
-		std::cout << "Room not found" << std::endl;
 		return;
 	}
 
@@ -59,5 +56,5 @@ void Checkin::execute() {
 
 	
 	hotel_.add_record(Record(start, end, note, *r, beds, Record::Type::CHECKIN));
-	
+	std::cout << "Room with number " << r->get_number() << " is cheked in for the period " << start << " to " << end << std::endl;
 }

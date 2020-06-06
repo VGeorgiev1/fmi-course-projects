@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Help.h"
+#include "../headers/Help.h"
 
 Help::Help(Hotel& h)
 	: FileOperation(h, "help") {};

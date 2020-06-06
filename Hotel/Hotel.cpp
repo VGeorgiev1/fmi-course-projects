@@ -1,5 +1,6 @@
 #include "Hotel.h"
 #include <limits.h>
+#include <iostream>
 
 Room* Hotel::find_room(int number) {
 
@@ -10,7 +11,7 @@ Room* Hotel::find_room(int number) {
 	}
 	return nullptr;
 }
-Hotel::Hotel() {}
+Hotel::Hotel() : ready_to_operate(false) {};
 
 void Hotel::set_operatable(bool value) {
 	ready_to_operate = value;
@@ -18,6 +19,22 @@ void Hotel::set_operatable(bool value) {
 
 void Hotel::remove_record(std::vector<Record>::iterator it) {
 	records.erase(it);
+}
+
+Hotel::~Hotel() {
+	for (std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
+		delete *it;
+	}
+}
+
+void Hotel::remove_record(int number, Record::Type t) {
+	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
+		if (it->get_room().get_number() == number && it->get_type() == t) {
+			records.erase(it);
+			return;
+		}
+	}
+	std::cout << "Room " << number << " has no reacords for itslef" << std::endl;
 }
 
 std::vector<Record>& Hotel::get_records() {

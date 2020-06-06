@@ -1,5 +1,5 @@
 #include <string>
-#include "Operation.h"
+#include "../headers/Operation.h"
 
 
 Operation::Operation(std::string _name) : name(_name) {};

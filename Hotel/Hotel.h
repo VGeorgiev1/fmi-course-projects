@@ -3,7 +3,7 @@
 #include <vector>
 #include "Room.h"
 #include "Record.h"
-#include "Operation.h"
+#include "Operations/headers/Operation.h"
 
 
 class Hotel {
@@ -14,10 +14,12 @@ class Hotel {
 	Room* find_room(int number);
 public:
 	Hotel();
+	~Hotel();
 
 	void set_operatable(bool value);
 	bool can_operate();
 
+	void remove_record(int number, Record::Type t);
 
 	void remove_record(std::vector<Record>::iterator it);
 	void add_room(Room r);

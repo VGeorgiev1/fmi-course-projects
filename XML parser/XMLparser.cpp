@@ -17,13 +17,10 @@ Node* const& XMLParser::recursive_search(Node* const& n, std::string id) {
     if (n->get_id() == id) {
         return n;
     }
-
     if (!n->has_children()) {
         return nullptr;
     }
-
     std::vector<Node* > children = n->get_children();
-
     for (std::vector<Node*>::iterator it = children.begin(); it != children.end(); ++it) {
         Node* temp = recursive_search((*it), id);
 
@@ -31,7 +28,6 @@ Node* const& XMLParser::recursive_search(Node* const& n, std::string id) {
             return temp;
         }
     }
-
     return nullptr;
 }
 
@@ -102,7 +98,7 @@ void XMLParser::delete_nodes(Node* parent) {
 
 XMLParser::~XMLParser() {
     for (std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
-        delete* it;
+        delete *it;
     }
     remove_nodes();
 }

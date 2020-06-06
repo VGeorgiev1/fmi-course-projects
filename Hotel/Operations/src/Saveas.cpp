@@ -1,5 +1,5 @@
-#include "Saveas.h"
-#include "Save.h"
+#include "../headers/Saveas.h"
+#include "../headers/Save.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -13,8 +13,6 @@ void Saveas::execute() {
 	std::cin >> name;
 
 	FileOperation* op = (FileOperation*)(hotel_.find_operation("save"));
-
-	
 
 	if(op != nullptr) {
 

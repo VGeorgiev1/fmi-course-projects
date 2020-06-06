@@ -1,7 +1,7 @@
 #ifndef FILE_OPERATION_H
 #define FILE_OPERATION_H
 #include "Operation.h"
-#include "Hotel.h"
+#include "../../Hotel.h"
 
 class FileOperation : public Operation {
 protected:

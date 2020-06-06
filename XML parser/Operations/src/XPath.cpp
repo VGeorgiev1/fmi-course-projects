@@ -122,14 +122,9 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
     }
     next += 1;
 
-    if (next == end) {
+    if (next == end || !(n->get_children())) {
         return;
     }
-
-    if (!n->has_children()) {
-        return;
-    }
-
 
     std::vector<Node* > children = n->get_children();
 
