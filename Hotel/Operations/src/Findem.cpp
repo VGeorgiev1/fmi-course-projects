@@ -38,15 +38,19 @@ void Findem::execute() {
 	std::string start_date, end_date;
 
 	std::cin >> beds >> start_date >> end_date;
+	try {
+		Date start(start_date), end(end_date);
 
-	Date start(start_date), end(end_date);
+		bool found_room = false;
 
-	bool found_room = false;
+		std::cout << "Rooms available for this period: " << std::endl;
 
-	std::cout << "Rooms available for this period: " << std::endl;
-
-	Room* most_fitting_room = create_room(beds, start, end, 0, 0);
-	std::cout << "Room " << most_fitting_room->get_number() << " is free for that period!" << std::endl;
-
+		Room* most_fitting_room = create_room(beds, start, end, 0, 0);
+		std::cout << "Room " << most_fitting_room->get_number() << " is free for that period!" << std::endl;
+	}
+	catch (std::invalid_argument err) {
+		std::cout << err.what() << std::endl;
+		throw OperationException("Ther was a problem parsing date");
+	}
 
 }

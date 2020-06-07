@@ -20,8 +20,6 @@ void Checkin::execute() {
 
 	note = note_and_beds.substr(1, idx);
 
-	Date start(start_date), end(end_date);
-
 	Room* r = hotel_.get_room(room);
 
 	if (idx != note_and_beds.size()) {
@@ -33,29 +31,34 @@ void Checkin::execute() {
 
 
 	if (r == nullptr) {
-		return;
+		throw OperationException("Room cannot be found!");
 	}
 
-	if (start > end) {
-		throw OperationException("Start date cannot be after end date!");
-		return;
-	}
 	if (beds > r->get_beds()) {
 		throw OperationException("This room has fewer beds!");
-		return;
 	}
 
 	if (hotel_.get_check_in_for_room(r->get_number()) != nullptr) {
 		throw OperationException("Room is cheked in");
-		return;
 	}
 
-	if (hotel_.is_unavailable_for_period(room, start, end)) {
-		throw OperationException("Room is unavailable for tha period.");
-		return;
-	}
+	try {
 
-	
-	hotel_.add_record(Record(start, end, note, r, beds, Record::Type::CHECKIN));
-	std::cout << "Room with number " << r->get_number() << " is cheked in for the period " << start << " to " << end << std::endl;
+		Date start(start_date), end(end_date);
+
+		if (start > end) {
+			throw OperationException("Start date cannot be after end date!");
+		}
+
+		if (hotel_.is_unavailable_for_period(room, start, end)) {
+			throw OperationException("Room is unavailable for tha period.");
+		}
+
+		hotel_.add_record(Record(start, end, note, r, beds, Record::Type::CHECKIN));
+		std::cout << "Room with number " << r->get_number() << " is cheked in for the period " << start << " to " << end << std::endl;
+	}
+	catch (std::invalid_argument err) {
+		std::cout << err.what() << std::endl;
+		throw OperationException("Ther was a problem parsing date");
+	}
 }

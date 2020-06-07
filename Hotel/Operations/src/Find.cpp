@@ -10,35 +10,19 @@ void Find::execute() {
 	std::string start_date, end_date;
 
 	std::cin >> beds >> start_date >> end_date;
+	try {
+		Date start(start_date), end(end_date);
 
+		Room* r = hotel_.get_most_fitting_room(beds, start, end, 0, true);
 
-	Room* r = hotel_.get_most_fitting_room(beds, start_date, end_date, 0, true);
+		if (r == nullptr) {
+			throw OperationException("No available room for this period!");
+		};
 
-	std::vector<Room*> rooms = hotel_.get_unrecorded_rooms();
-
-	if (r == nullptr) {
-		throw OperationException("No available room for this period!");
-		return;
-	};
-
-	std::cout << "Room available for this period: " << r->get_number() << " with " << r->get_beds() << " beds" << std::endl;
-
-	
-
-	//for (std::vector<Room>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
-	//	if (it->get_beds() <= beds) {
-	//		std::cout << it->get_number() << std::endl;
-	//	}
-	//}
-
-	//std::vector<Record> records = hotel_.get_records(); 
-
-	//for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-	//	if (((it->get_start_date() > start_date && it->get_finish_date() > end_date)
-	//		|| (it->get_start_date() < start_date && it->get_finish_date() < end_date))
-	//		&& it->get_room().get_beds() <= beds)
-	//	{
-	//		std::cout <<  << it->get_room().get_number() << std::endl;
-	//	}
-	//}
+		std::cout << "Room available for this period: " << r->get_number() << " with " << r->get_beds() << " beds" << std::endl;
+	}
+	catch (std::invalid_argument err) {
+		std::cout << err.what() << std::endl;
+		throw OperationException("Ther was a problem parsing date");
+	}
 }

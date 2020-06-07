@@ -10,8 +10,6 @@ int Date::monthsDays[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 Date::Date(std::string date_string) {
 
-	int a = date_string[4];
-
 	if (date_string.find('-') == -1) {
 		throw std::invalid_argument("Invalid date!");
 	}

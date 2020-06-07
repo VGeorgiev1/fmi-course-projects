@@ -8,22 +8,29 @@ void Availability::execute() {
 	std::string str_date;
 
 	std::getline(std::cin, str_date);
-
 	Date date;
+	
+	try {
 
-	if(str_date == "") {
-		std::time_t rawtime;
-		std::tm* timeinfo;
+		if (str_date == "") {
+			std::time_t rawtime;
+			std::tm* timeinfo;
 
-		std::time(&rawtime);
-		timeinfo = std::localtime(&rawtime);
+			std::time(&rawtime);
+			timeinfo = std::localtime(&rawtime);
 
-		str_date.resize(11);
-		std::strftime(&str_date[0], 11, "%Y-%m-%d", timeinfo);
+			str_date.resize(11);
+			std::strftime(&str_date[0], 11, "%Y-%m-%d", timeinfo);
 
-		date = Date(str_date);
-	} else {
-		date = Date(str_date);
+			date = Date(str_date);
+		}
+		else {
+			date = Date(str_date);
+		}
+	}
+	catch (std::invalid_argument err) {
+		std::cout << err.what() << std::endl;
+		throw OperationException("Ther was a problem parsing date");
 	}
 
 	std::vector<Room*> available_rooms_on_date = hotel_.get_unrecorded_rooms();
