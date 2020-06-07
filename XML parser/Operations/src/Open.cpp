@@ -1,6 +1,8 @@
 #include "../headers/Open.h"
 #include <fstream>
 #include <stdio.h>
+#include "../../XMLParserException.h"
+#include "../../XMLException.h"
 
 Open::Open(XMLParser& parser)
 	: FileOperation(parser, "open") {};
@@ -16,16 +18,19 @@ void Open::execute() {
 		parser.set_operatable(true);
 
 		FileOperation* save = (FileOperation*)(parser.find_operation("save"));
+		FileOperation* saveas = (FileOperation*)(parser.find_operation("saveas"));
 
-		if (save != nullptr) {
+		if (save != nullptr && saveas != nullptr) {
+			save->set_file_name(name);
 			save->set_file_name(name);
 		}
+		std::cout << "file " << name << " opened successufuly!" << std::endl;
 	}
-	catch (std::invalid_argument err) {
+	catch (XMLParserException err) {
 		std::cout << err.what() << std::endl;
 		parser.remove_nodes();
+		throw XMLException("There was a problem parsing the file!");
 	}
-	std::cout << "file " << name << " opened successufuly!" << std::endl;
 }
 
 bool Open::file_opened() {

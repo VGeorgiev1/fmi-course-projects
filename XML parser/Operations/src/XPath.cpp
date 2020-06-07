@@ -36,6 +36,9 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
 
     int idx = INT_MAX;
 
+    if (n == nullptr) {
+        throw XMLException("Node with this id cannot be found!");
+    }
 
     int idx_start = current_name.find('[');
     int idx_end = current_name.find(']');
@@ -63,7 +66,7 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
             int cursor_start = cursor;
 
             if (current_name[cursor] != '@') {
-                throw std::invalid_argument("XPath is wrong!");
+                throw XMLException("XPath is wrong!");
             }
 
             cursor++;
@@ -76,7 +79,7 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
 
             char end = current_name[cursor];
             if (end != '=' && cursor != current_name.size() - 1) {
-                throw std::invalid_argument("XPath is wrong!");
+                throw XMLException("XPath is wrong!");
             }
 
             if (cursor == current_name.size()) break;
@@ -122,7 +125,7 @@ void XPATH::xpath_recursive_search(Node* const& n, std::vector<std::string>::ite
     }
     next += 1;
 
-    if (next == end || !(n->get_children())) {
+    if (next == end || !(n->has_children())) {
         return;
     }
 

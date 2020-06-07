@@ -12,6 +12,10 @@ void Newchild::execute() {
 
 	Node* n = xml.recursive_search(xml.get_parent(), id);
 
+	if (n == nullptr) {
+		throw XMLException("Node with this id cannot be found!");
+	}
+
 	n->add_child(new Node());
 
 	std::cout << "Node with id " << id << " was added" << std::endl;

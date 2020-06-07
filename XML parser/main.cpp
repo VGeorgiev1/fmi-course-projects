@@ -6,7 +6,7 @@
 #include "Node.h"
 #include "XMLparser.h"
 #include "Operations/Operations.h"
-
+#include "XMLException.h"
 
 using namespace std;
 
@@ -49,8 +49,8 @@ int main() {
             try {
                 op->execute();
             }
-            catch (std::invalid_argument err) {
-                std::cout << err.what();
+            catch (XMLException err) {
+                std::cout << err.what() <<std::endl;
             }
         }
 

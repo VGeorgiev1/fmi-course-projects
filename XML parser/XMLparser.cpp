@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "XMLparser.h"
+#include "XMLParserException.h"
 
 void XMLParser::create_branch(std::stack<Node*>& stack) {
     int size = stack.size();
@@ -9,11 +10,15 @@ void XMLParser::create_branch(std::stack<Node*>& stack) {
         stack.top() -> add_child(last_node);
     }
     if (stack.size() == 0) {
-        throw std::invalid_argument("Parsing error!");
+        throw XMLParserException("Parsing error!");
     }
 }
 
 Node* const& XMLParser::recursive_search(Node* const& n, std::string id) {
+    if (n == nullptr) {
+        return nullptr;
+    }
+    
     if (n->get_id() == id) {
         return n;
     }
@@ -100,6 +105,8 @@ XMLParser::~XMLParser() {
     for (std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
         delete *it;
     }
+    operations.clear();
+
     remove_nodes();
 }
 
@@ -147,6 +154,10 @@ Operation* XMLParser::find_operation(std::string name) {
 
 void XMLParser::remove_children(Node* node) {
 
+    if (node == nullptr) {
+        return;
+    }
+
     if (!node->has_children()) {
         return;
     }
@@ -158,7 +169,9 @@ void XMLParser::remove_children(Node* node) {
         delete* it;
     }
 
+
     children.clear();
+ 
 }
 
 std::string XMLParser::generate_unique_id(std::string& cur_id) {
@@ -209,6 +222,10 @@ void XMLParser::generate_ids(Node* node) {
 
 void XMLParser::remove_nodes() {
     remove_children(parent_node);
+    if (parent_node != nullptr) {
+        delete parent_node;
+        parent_node = nullptr;
+    }
 };
 
 Node* XMLParser::get_parent() {
@@ -224,13 +241,25 @@ void XMLParser::set_operatable(bool state) {
 }
 
 Node* XMLParser::parse(std::string name) {
-    std::ifstream file;
+    std::fstream file;
 
-    file.open(name);
+    file.open(name, std::ios::in);
 
 
     if (!file.is_open()) {
-        throw std::invalid_argument("File cannot be opened!");
+        file.open(name, std::fstream::out | std::fstream::in | std::fstream::trunc);
+
+        if (!file.is_open()) {
+            throw XMLParserException("File cannot be created or opened opened!");
+        }
+
+        std::cout << "File " << name << "was created!" << std::endl;
+        return nullptr;
+    }
+
+    if (file.peek() == std::fstream::traits_type::eof()) {
+        parent_node == nullptr;
+        return parent_node;
     }
 
     int idx = 0;
@@ -262,7 +291,7 @@ Node* XMLParser::parse(std::string name) {
                     std::string name = line.substr(start, idx - start);
 
                     if (n_stack.top()->get_name() != name) {
-                        throw std::invalid_argument("Closing tag mismatch!");
+                        throw XMLParserException("Closing tag mismatch!");
                     }
                     create_branch(n_stack);
                     continue;
@@ -290,7 +319,7 @@ Node* XMLParser::parse(std::string name) {
 
 
                 if (line.find('=') == -1) {
-                    throw std::invalid_argument("Invalid attributes!");
+                    throw XMLParserException("Invalid attributes!");
                 }
 
                 int start = idx;
@@ -299,7 +328,7 @@ Node* XMLParser::parse(std::string name) {
                 
                 move_to_symbol(line, idx, "\"", 1);
                 if (line[idx] != '"') {
-                    throw std::invalid_argument("Invalid attribute value!");
+                    throw XMLParserException("Invalid attribute value!");
                 }
 
                 idx++;
@@ -336,8 +365,9 @@ Node* XMLParser::parse(std::string name) {
         }
     }
 
+
     if (n_stack.size() > 1) {
-        throw std::invalid_argument("Parsing error!");
+        throw XMLParserException("Parsing error!");
     }
 
     parent_node = n_stack.top();

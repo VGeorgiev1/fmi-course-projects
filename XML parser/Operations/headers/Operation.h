@@ -1,7 +1,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 #include <string>
-
+#include "../../XMLException.h"
 class Operation {
 	std::string name;
 public:

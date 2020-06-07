@@ -15,8 +15,8 @@ void Save::execute() {
 
 	if (stream.is_open()) {
 		parser.print(stream);
+		std::cout << "File " << file_name << " was saved!" << std::endl;
 	}
 	
-	std::cout << "File " << file_name << " was saved!" << std::endl;
 }
 

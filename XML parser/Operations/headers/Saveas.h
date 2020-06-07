@@ -1,4 +1,3 @@
-#pragma once
 #ifndef SAVEAS_H
 #define SAVEAS_H
 

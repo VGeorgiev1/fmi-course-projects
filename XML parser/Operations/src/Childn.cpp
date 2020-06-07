@@ -1,7 +1,6 @@
 #include "../headers/Childn.h"
 #include <iostream>
 
-
 Childn::Childn(XMLParser& xml)
 	: XMLOperation(xml, "child") {};
 
@@ -14,14 +13,18 @@ void Childn::execute() {
 
     Node* searched_node = xml.recursive_search(xml.get_parent(), id);
 
+    if (searched_node == nullptr) {
+        throw XMLException("No node with this id can be found!");
+    }
+
     if(!(searched_node -> has_children())) {
-        std::cout << "The node with this id has no children!" << std::endl;
+        throw XMLException("The node with this id has no children!");
     }
 
     std::vector<Node*> children = searched_node->get_children();
 
     if(children.size() < n) {
-        std::cout << "The node doesnt have that much children!" << std::endl;
+        throw XMLException("The node doesnt have that much children!");
     }
 
     Node* nth_nod = children[n];

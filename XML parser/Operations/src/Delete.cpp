@@ -12,7 +12,15 @@ void Delete::execute() {
 
 	Node* n = xml.recursive_search(xml.get_parent(), id);
 
+	if (n == nullptr) {
+		throw XMLException("No node with this id can be found!");
+	}
+
 	bool result = n->remove_attribute(key);
 
-	std::cout << "Attribute " << key << " " << (result ? " was removed" : " wasnt found") << std::endl;
+	if (!result) {
+		throw XMLException("Attribute wasn't found");
+	}
+
+	std::cout << "Attribute " << key << " " << " was removed" << std::endl;
 }

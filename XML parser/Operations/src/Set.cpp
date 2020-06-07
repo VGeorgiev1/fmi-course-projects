@@ -11,15 +11,21 @@ void Set::execute() {
 
 	Node* n = xml.recursive_search(xml.get_parent(), id);
 
+	if (n == nullptr) {
+		throw XMLException("No node with this id can be found!");
+	}
+
 	Attribute* atr = n->get_attribute(key);
 
-	if (atr != nullptr) {
-		atr->set_value(new_value);
-		std::cout << "Node " << n->get_name() << ", attribute: " << atr->get_name() << " now has value: " << atr->get_value() << std::endl;
+	if (atr == nullptr) {
+		n->add_attribute(key, new_value);
+		std::cout << "Node now has attribute " << key << " with value " << new_value<< std::endl;
 		return;
 	}
 
-	n->add_attribute(key, new_value);
+	atr->set_value(new_value);
+	std::cout << "Node " << n->get_name() << ", attribute: " << atr->get_name() << " now has value: " << atr->get_value() << std::endl;
 	return;
+	
 }
 

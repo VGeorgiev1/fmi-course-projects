@@ -11,9 +11,11 @@ void Close::execute() {
 	parser.remove_nodes();
 
 	FileOperation* save = (FileOperation*)(parser.find_operation("save"));
+	FileOperation* saveas = (FileOperation*)(parser.find_operation("saveas"));
 
-	if(save != nullptr) {
+	if(save != nullptr && saveas != nullptr) {
 		save->set_file_name("");
+		saveas->set_file_name("");
 	}
 
 	parser.set_operatable(false);

@@ -12,13 +12,16 @@ void Select::execute() {
 
 	Node* n = xml.recursive_search(xml.get_parent(), id);
 
-	Attribute* atr = n->get_attribute(key);
-
-	if (atr != nullptr) {
-		std::cout << "Node " << n->get_name() << ", attribute: " << atr->get_name() << " value: " << atr->get_value() << std::endl;
-		return;
+	if (n == nullptr) {
+		throw XMLException("Node with this id cannot be found!");
 	}
 
-	std::cout << "Node " << n->get_name() << "has no attribute: " << key;
-	return;
+	Attribute* atr = n->get_attribute(key);
+
+	if (atr == nullptr) {
+
+		throw XMLException("Node with this id has no attirbute with this key");
+	}
+
+	std::cout << "Node " << n->get_name() << ", attribute: " << atr->get_name() << " value: " << atr->get_value() << std::endl;
 }

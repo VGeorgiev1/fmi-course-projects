@@ -11,13 +11,15 @@ void Saveas::execute() {
 
 	std::cin >> name;
 
-	FileOperation* op = (FileOperation*)(parser.find_operation("save"));
+	FileOperation* save = (FileOperation*)(parser.find_operation("save"));
+	FileOperation* close = (FileOperation*)(parser.find_operation("close"));
 
-	if(op != nullptr) {
+	if(save != nullptr && close != nullptr) {
 
-		op->set_file_name(name);
+		save->set_file_name(name);
+		close->set_file_name(name);
 
-		op->execute();
+		save->execute();
 
 		std::cout << "File " << name << " was saved!" << std::endl;
 		return;
