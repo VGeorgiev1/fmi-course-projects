@@ -15,3 +15,4 @@
 #include "./headers/Text.h"
 #include "./headers/XMLOperation.h"
 #include "./headers/XPath.h"
+#include "./headers/Children.h"

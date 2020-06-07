@@ -21,6 +21,7 @@ int main() {
     xml.add_operation(new Select(xml));
     xml.add_operation(new Set(xml));
     xml.add_operation(new Childn(xml));
+    xml.add_operation(new Children(xml));
     xml.add_operation(new Text(xml));
     xml.add_operation(new Delete(xml));
     xml.add_operation(new Newchild(xml));
