@@ -15,7 +15,7 @@ void Open::execute() {
 
 	std::cin >> file_name;
 	
-	std::ifstream file(file_name, std::ios::binary);
+	std::ifstream file(file_name);
 
 	FileOperation* save = (FileOperation*)(hotel_.find_operation("save"));
 	FileOperation* close = (FileOperation*)(hotel_.find_operation("close"));
@@ -28,7 +28,7 @@ void Open::execute() {
 	set_file_name(file_name);
 
 	if(!file.is_open()) {
-		std::ofstream new_file(file_name, std::ios::out | std::ios::binary);
+		std::ofstream new_file(file_name, std::ios::out);
 		if(!new_file.is_open()) {
 			throw OperationException("File could not be opened or created!");
 			save->set_file_name("");
