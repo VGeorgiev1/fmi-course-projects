@@ -17,7 +17,7 @@ void Report::execute() {
 		if ((it->get_start_date() >= start || it->get_finish_date() <= end)
 		 	|| (it->get_start_date() <= start && it->get_finish_date() >= end)
 			  && it -> get_type() == Record::Type::CHECKIN) {
-			Room room = it -> get_room();
+			Room* room = it -> get_room();
 	
 			int start_days = start - it->get_start_date();
 			int end_days = end - it->get_finish_date();
@@ -32,7 +32,7 @@ void Report::execute() {
 				full_days +=end_days;
 			}
 
-			std::cout << "Room " << room.get_number() << " will be used for " << full_days << " days in that period." << std::endl;
+			std::cout << "Room " << room->get_number() << " will be used for " << full_days + 1 << " days in that period." << std::endl;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 #include "../headers/Checkin.h"
+#include "../../OperationException.h"
 #include <iostream>
 
 
@@ -36,25 +37,25 @@ void Checkin::execute() {
 	}
 
 	if (start > end) {
-		std::cout << "Start date cannot be after end date!" << std::endl;
+		throw OperationException("Start date cannot be after end date!");
 		return;
 	}
 	if (beds > r->get_beds()) {
-		std::cout << "This room has fewer beds!" << std::endl;
+		throw OperationException("This room has fewer beds!");
 		return;
 	}
 
 	if (hotel_.room_is_cheked_in(r->get_number())) {
-		std::cout << "Room is cheked in" << std::endl;
+		throw OperationException("Room is cheked in");
 		return;
 	}
 
 	if (hotel_.is_unavailable_for_period(room, start, end)) {
-		std::cout << "Room is unavailable for tha period." << std::endl;
+		throw OperationException("Room is unavailable for tha period.");
 		return;
 	}
 
 	
-	hotel_.add_record(Record(start, end, note, *r, beds, Record::Type::CHECKIN));
+	hotel_.add_record(Record(start, end, note, r, beds, Record::Type::CHECKIN));
 	std::cout << "Room with number " << r->get_number() << " is cheked in for the period " << start << " to " << end << std::endl;
 }

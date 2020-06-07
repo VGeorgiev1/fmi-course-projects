@@ -13,18 +13,18 @@ private:
 	Date finish_date;
 	int beds_taken;
 	std::string note;
-	Room& room;
+	Room* room;
 	Type type;
 public:
 
-	Record(Date start, Date finish, std::string note, Room& r, int beds_taken, Record::Type type);
+	Record(Date start, Date finish, std::string note, Room* r, int beds_taken, Record::Type type);
 
-	Date get_start_date();
-	Date get_finish_date();
-	Room& get_room();
-	std::string get_note();
-	Type get_type();
-	int get_beds_taken();
+	Date get_start_date() const;
+	Date get_finish_date() const;
+	Room* get_room() const;
+	const std::string& get_note() const;
+	Type get_type() const;
+	int get_beds_taken() const;
 
 	Record& operator=(const Record& other);
 };

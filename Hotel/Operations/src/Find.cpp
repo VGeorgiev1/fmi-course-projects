@@ -1,4 +1,5 @@
 #include "../headers/Find.h"
+#include "../../OperationException.h"
 #include <iostream>
 
 Find::Find(Hotel& h)
@@ -13,10 +14,10 @@ void Find::execute() {
 
 	Room* r = hotel_.get_most_fitting_room(beds, start_date, end_date, 0);
 
-	std::vector<Room> rooms = hotel_.get_unrecorded_rooms();
+	std::vector<Room*> rooms = hotel_.get_unrecorded_rooms();
 
 	if (r == nullptr) {
-		std::cout << "NO available room for this period!" << std::endl;
+		throw OperationException("No available room for this period!");
 		return;
 	};
 

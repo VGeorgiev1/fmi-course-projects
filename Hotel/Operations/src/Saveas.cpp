@@ -1,5 +1,6 @@
 #include "../headers/Saveas.h"
 #include "../headers/Save.h"
+#include "../../OperationException.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -19,7 +20,9 @@ void Saveas::execute() {
 		op->set_file_name(name);
 
 		op->execute();
+		return;
 	}
 
+	throw OperationException("File could not be saved!");
 }
 

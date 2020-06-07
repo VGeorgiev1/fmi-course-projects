@@ -1,6 +1,6 @@
 #include "./Operations/Global.h"
 #include "./Hotel.h"
-
+#include "OperationException.h"
 int main() {
 	Hotel hotel;
 	
@@ -17,9 +17,9 @@ int main() {
 	hotel.add_operation(new Unavailable(hotel));
 	hotel.add_operation(new Help(hotel));
 	
-	hotel.add_room(Room(4, 100));
-	hotel.add_room(Room(5, 200));
-	hotel.add_room(Room(2, 300));
+	//hotel.add_room(new Room(4, 100));
+	//hotel.add_room(new Room(5, 200));
+	//hotel.add_room(new Room(2, 300));
 
 
 	while (true) {
@@ -42,8 +42,8 @@ int main() {
 				op->execute();
 			}
 		}
-		catch (std::invalid_argument err) {
-			std::cout << "There was a problem with executing the operation! " << err.what() << std::endl;
+		catch (OperationException err) {
+			std::cout << err.what() << std::endl;
 		}
 
 	}

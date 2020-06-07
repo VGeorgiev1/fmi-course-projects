@@ -10,6 +10,7 @@ private:
 public:
 	Date();
 	Date(std::string date_string);
+	static int monthsDays[12];
 
 	bool operator <(const Date& other);
 	bool operator >(const Date& other);

@@ -1,12 +1,13 @@
 #include "../headers/Save.h"
 #include <fstream>
 #include <stdio.h>
+#include "../../OperationException.h"
 
 Save::Save(Hotel& h)
 	: FileOperation(h, "save") {};
 
 void Save::execute() {
-	std::vector<Room> rooms = hotel_.get_rooms();
+	std::vector<Room*>& rooms = hotel_.get_rooms();
 	std::vector<Record> records = hotel_.get_records();
 
 	std::ofstream file(file_name);
@@ -14,9 +15,7 @@ void Save::execute() {
 	std::cout << file_name << std::endl;
 
 	if(!file.is_open()) {
-
-		std::cout << "File not opened correctly!" << std::endl;
-		return;
+		throw OperationException("File not opened correctly!");
 	}
 
 	int rooms_size = rooms.size();
@@ -26,9 +25,9 @@ void Save::execute() {
 
 	//file.write((char*) &rooms_size, sizeof(int));
 
-	for (std::vector<Room>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
+	for (std::vector<Room*>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
 		//file.write((char*) &(*it), sizeof(*it));
-		file << (*it).get_number() << " "<< (*it).get_beds() << std::endl;
+		file << (*it)->get_number() << " "<< (*it)->get_beds() << std::endl;
 	}
 
 	//file.write((char*)&records_size, sizeof(int));
@@ -59,7 +58,7 @@ void Save::execute() {
 
 		//file.write((char*)&t, sizeof(t));
 		
-		int room_number = (*it).get_room().get_number();
+		int room_number = (*it).get_room()->get_number();
 		int beds_taken = (*it).get_beds_taken();
 
 		file << room_number << " " << beds_taken << std::endl;

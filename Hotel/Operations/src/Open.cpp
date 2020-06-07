@@ -1,4 +1,5 @@
 #include "../headers/Open.h"
+#include "../../OperationException.h"
 #include <fstream>
 #include <stdio.h>
 
@@ -29,7 +30,7 @@ void Open::execute() {
 	if(!file.is_open()) {
 		std::ofstream new_file(file_name, std::ios::out | std::ios::binary);
 		if(!new_file.is_open()) {
-			std::cout << "File " << file_name << " could not be opened or created! " << std::endl;
+			throw OperationException("File could not be opened or created!");
 			save->set_file_name("");
 			close->set_file_name("");
 			set_file_name(file_name);
@@ -51,8 +52,7 @@ void Open::execute() {
 	file >> rooms_size;
 
 	if (!file) {
-		std::cout << "There was a problem reading the file!" << std::endl;
-		return;
+		throw OperationException("There was a problem reading the file!");
 	}
 
 	if(rooms_size == 0) {
@@ -68,11 +68,10 @@ void Open::execute() {
 		file >> beds;
 		
 		if (!file) {
-			std::cout << "There was a problem reading the file!" << std::endl;
-			return;
+			throw OperationException("There was a problem reading the file!");
 		}
 
-		hotel_.add_room(Room(beds, room_number));
+		hotel_.add_room(new Room(beds, room_number));
 	}
 
 	int records_size = 0;
@@ -81,8 +80,7 @@ void Open::execute() {
 	file >> records_size;
 	
 	if (!file || records_size < 0) {
-		std::cout << "There was a problem reading the file!" << std::endl;
-		return;
+		throw OperationException("There was a problem reading the file!");
 	}
 
 
@@ -103,12 +101,13 @@ void Open::execute() {
 
 		file >> room_number >> beds_taken;
 
-		if (!file || room_number < 0 || beds_taken < 0) {
-			std::cout << "There was a problem reading the file!" << std::endl;
-			return;
+		Room* r = hotel_.get_room(room_number);
+
+		if (!file || room_number < 0 || beds_taken < 0 || r == nullptr || beds_taken > r->get_beds()) {
+			throw OperationException("There was a problem reading the file!");
 		}
 
-		hotel_.add_record(Record(start_date, finish, note, *(hotel_.get_room(room_number)), beds_taken, (Record::Type)t));
+		hotel_.add_record(Record(start_date, finish, note, r, beds_taken, (Record::Type)t));
 	}
 
  	file.close();

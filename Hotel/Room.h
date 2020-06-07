@@ -9,8 +9,8 @@ public:
 	Room(int beds, int number);
 	Room();
 
-	int get_number();
-	int get_beds();
+	int get_number() const;
+	int get_beds() const;
 	bool operator==(const Room& other);
 };
 

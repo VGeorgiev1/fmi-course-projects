@@ -6,6 +6,7 @@
 
 Date::Date() : year(0), month(0), date(0) {};
 
+int Date::monthsDays[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 Date::Date(std::string date_string) {
 
@@ -17,37 +18,34 @@ Date::Date(std::string date_string) {
 	int args = 0;
 
 	int start = 0;
-	while (args < 3) {
-		int finish = date_string.find('-', start);
+
+	int finish = date_string.find('-', start);
 
 
-		std::string arg = date_string.substr(start, finish - start);
-		int i_arg = std::stoi(arg);
-			
-		if (args == 0) {
-			if (i_arg <= 0) {
-				throw std::invalid_argument("Invalid date!");
-			}
-			year = i_arg;
-		}
-		else if (args == 1) {
-			if (i_arg <= 0 || i_arg > 12) {
-				throw std::invalid_argument("Invalid date!");
-			}
-			month = i_arg;
-		}
-		else {
-			if (i_arg <= 0 || i_arg > 31) {
-				throw std::invalid_argument("Invalid date!");
-			}
-			date = i_arg;
-		}
+	std::string y = date_string.substr(start, finish - start);
+	year = std::stoi(y);
 
-		args++;
-
-		start = finish + 1;
+	if (year <= 0) {
+		throw std::invalid_argument("Invalid date!");
 	}
+	start = finish + 1;
+	finish = date_string.find('-', start);
 
+	std::string m = date_string.substr(start, finish - start);
+	month = std::stoi(m);
+	if (month <= 0 || month > 12) {
+		throw std::invalid_argument("Invalid date!");
+	}
+	start = finish + 1;
+
+
+	std::string d = date_string.substr(start, finish - start);
+	date = std::stoi(d);
+
+
+	if (date <= 0 || date > monthsDays[month]) {
+		throw std::invalid_argument("Invalid date!");
+	}
 }
 
 bool Date::operator <(const Date& other) {
@@ -66,13 +64,18 @@ bool Date::operator==(const Date& other) {
 	return false;
 }
 int Date::operator-(const Date& other) {
-	int year_dates = (year - other.year) * 365;
-	int month_date = (month - other.month) * 30;
-	int days = (date - other.date) * 1;
+	int date_n1 = year*365 + date;
+	int date_n2 = other.year * 365 + other.date;
 
+	for (int i = 0; i < month - 1; i++) {
+		date_n1 += monthsDays[i];
+	}
 
+	for (int i = 0; i < other.month - 1; i++) {
+		date_n2 += monthsDays[i];
+	}
 
-	return (year_dates + month_date + days);
+	return date_n1 - date_n2;
 }
 bool Date::operator!=(const Date& other) {
 	return !(*this == other);

@@ -2,13 +2,13 @@
 #include <limits.h>
 #include <iostream>
 
-Room* Hotel::find_room(int number) {
-
-	for (unsigned int i = 0; i < rooms.size(); i++) {
-		if (rooms[i].get_number() == number) {
-			return &rooms[i];
+Room* Hotel::find_room(int number) const {
+	for (std::vector<Room*>::const_iterator it = rooms.begin(); it != rooms.end(); ++it) {
+		if ((*it)->get_number() == number) {
+			return *it;
 		}
 	}
+
 	return nullptr;
 }
 Hotel::Hotel() : ready_to_operate(false) {};
@@ -25,11 +25,14 @@ Hotel::~Hotel() {
 	for (std::vector<Operation*>::iterator it = operations.begin(); it != operations.end(); ++it) {
 		delete *it;
 	}
+	for (std::vector<Room*>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
+		delete *it;
+	}
 }
 
 void Hotel::remove_record(int number, Record::Type t) {
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		if (it->get_room().get_number() == number && it->get_type() == t) {
+		if (it->get_room()->get_number() == number && it->get_type() == t) {
 			records.erase(it);
 			return;
 		}
@@ -49,7 +52,7 @@ void Hotel::change_room(Room* room_swap, Room* room_to_swap) {
 
 
 	for (; it != records.end(); ++it) {
-		if (it->get_room().get_number() == room_swap->get_number()) {
+		if (it->get_room()->get_number() == room_swap->get_number()) {
 			start = it->get_start_date();
 			end = it->get_finish_date();
 			note = it->get_note();
@@ -57,7 +60,7 @@ void Hotel::change_room(Room* room_swap, Room* room_to_swap) {
 
 			records.erase(it);
 			
-			records.push_back(Record(start, end, note, *room_to_swap, beds_taken, Record::Type::CHECKIN));
+			records.push_back(Record(start, end, note, room_to_swap, beds_taken, Record::Type::CHECKIN));
 			break;
 		}
 	}
@@ -69,13 +72,17 @@ void Hotel::remove_records() {
 }
 
 void Hotel::remove_rooms() {
+	for (std::vector<Room*>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
+		delete* it;
+	}
+
 	rooms.clear();
 }
 
-std::vector<Room> Hotel::get_unrecorded_rooms() {
-	std::vector<Room> res;
+std::vector<Room*> Hotel::get_unrecorded_rooms() {
+	std::vector<Room*> res;
 
-	for (std::vector<Room>::iterator it = rooms.begin(); it != rooms.end(); ++it) {		
+	for (std::vector<Room*>::iterator it = rooms.begin(); it != rooms.end(); ++it) {		
 		bool unrecorded = true;
 		for (unsigned int j = 0; j < records.size(); j++) {
 			if (*it == records[j].get_room()) {
@@ -90,14 +97,14 @@ std::vector<Room> Hotel::get_unrecorded_rooms() {
 	return res;
 }
 
-bool Hotel::can_operate() {
+bool Hotel::can_operate() const {
 	return ready_to_operate;
 }
 
 Record* Hotel::get_check_in_for_room(int room) {
 	
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		if ((*it).get_room().get_number() == room && (*it).get_type() == Record::Type::CHECKIN) {
+		if ((*it).get_room()->get_number() == room && (*it).get_type() == Record::Type::CHECKIN) {
 			return &(*it);
 		}
 	}
@@ -105,21 +112,21 @@ Record* Hotel::get_check_in_for_room(int room) {
 	return nullptr;
 }
 
-Room* Hotel::get_room(int number) {
+Room* Hotel::get_room(int number) const {
 	return find_room(number);
 }
 void Hotel::add_record(Record r) {
 	records.push_back(r);
 }
 
-void Hotel::add_room(Room r) {
+void Hotel::add_room(Room* r) {
 	rooms.push_back(r);
 }
 
-bool Hotel::is_unavailable_for_period(int room, Date start, Date end) {
+bool Hotel::is_unavailable_for_period(int room, Date start, Date end) const {
 
-	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		if (it->get_room().get_number() == room && it->get_type() == Record::Type::UNAVAILABLE) {
+	for (std::vector<Record>::const_iterator it = records.begin(); it != records.end(); ++it) {
+		if (it->get_room()->get_number() == room && it->get_type() == Record::Type::UNAVAILABLE) {
 			
 			if (it->get_start_date() >= start || it->get_finish_date() <= end
 				|| (it->get_start_date() <= start && it->get_finish_date() >= end))
@@ -133,19 +140,19 @@ bool Hotel::is_unavailable_for_period(int room, Date start, Date end) {
 	return false;
 }
 
-Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int room_to_skip) {
+Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int room_to_skip) const {
 	int min_beds = INT_MAX;
 	Room* r = nullptr;
 
-	for (std::vector<Room>::iterator it = rooms.begin(); it != rooms.end(); ++it) {
-		int beds = (*it).get_beds();
+	for (std::vector<Room*>::const_iterator it = rooms.begin(); it != rooms.end(); ++it) {
+		int beds = (*it)->get_beds();
 		
-		if (beds >= requested_beds && beds <= min_beds && !is_unavailable_for_period(it->get_number(), start, end)) {
-			if (room_to_skip != 0 && room_to_skip == it->get_number()) {
+		if (beds >= requested_beds && beds <= min_beds && !is_unavailable_for_period((*it)->get_number(), start, end)) {
+			if (room_to_skip != 0 && room_to_skip == (*it)->get_number()) {
 				continue;
 			}
 			min_beds = beds;
-			r = &(*it);
+			r = (*it);
 		}
 	}
 
@@ -153,7 +160,7 @@ Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int
 };
 
 
-std::vector<Room> Hotel::get_rooms() {
+std::vector<Room*>& Hotel::get_rooms() {
 	return rooms;
 }
 
@@ -174,7 +181,7 @@ bool Hotel::room_is_cheked_in(int room) {
 	std::vector<Record> recs;
 
 	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		if (it -> get_room().get_number() == room && it -> get_type() == Record::Type::CHECKIN) {
+		if (it->get_room()->get_number() == room && it -> get_type() == Record::Type::CHECKIN) {
 			return true;
 		}
 	}
