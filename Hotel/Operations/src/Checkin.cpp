@@ -45,7 +45,7 @@ void Checkin::execute() {
 		return;
 	}
 
-	if (hotel_.room_is_cheked_in(r->get_number())) {
+	if (hotel_.get_check_in_for_room(r->get_number()) != nullptr) {
 		throw OperationException("Room is cheked in");
 		return;
 	}

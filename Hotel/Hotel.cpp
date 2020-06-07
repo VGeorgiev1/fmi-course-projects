@@ -140,7 +140,8 @@ bool Hotel::is_unavailable_for_period(int room, Date start, Date end) const {
 	return false;
 }
 
-Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int room_to_skip) const {
+
+Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int room_to_skip, bool check_for_checkin) const {
 	int min_beds = INT_MAX;
 	Room* r = nullptr;
 
@@ -151,11 +152,15 @@ Room* Hotel::get_most_fitting_room(int requested_beds, Date start, Date end, int
 			if (room_to_skip != 0 && room_to_skip == (*it)->get_number()) {
 				continue;
 			}
+			if (check_for_checkin && room_is_cheked_in((*it)->get_number(), start, end)) {
+				continue;
+			}
+
 			min_beds = beds;
 			r = (*it);
 		}
 	}
-
+	 
 	return r;
 };
 
@@ -177,11 +182,14 @@ Operation* Hotel::find_operation(std::string name) {
 	return nullptr;
 }
 
-bool Hotel::room_is_cheked_in(int room) {
-	std::vector<Record> recs;
+bool Hotel::room_is_cheked_in(int room, Date start, Date end) const {
 
-	for (std::vector<Record>::iterator it = records.begin(); it != records.end(); ++it) {
-		if (it->get_room()->get_number() == room && it -> get_type() == Record::Type::CHECKIN) {
+	for (std::vector<Record>::const_iterator it = records.begin(); it != records.end(); ++it) {
+		if (it->get_room()->get_number() == room &&
+			it -> get_type() == Record::Type::CHECKIN &&
+			((it->get_start_date() >= start || it->get_finish_date() <= end)
+			|| (it->get_start_date() <= start && it->get_finish_date() >= end))) {
+
 			return true;
 		}
 	}

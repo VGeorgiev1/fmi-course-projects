@@ -12,7 +12,7 @@ void Find::execute() {
 	std::cin >> beds >> start_date >> end_date;
 
 
-	Room* r = hotel_.get_most_fitting_room(beds, start_date, end_date, 0);
+	Room* r = hotel_.get_most_fitting_room(beds, start_date, end_date, 0, true);
 
 	std::vector<Room*> rooms = hotel_.get_unrecorded_rooms();
 

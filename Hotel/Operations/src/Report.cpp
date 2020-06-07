@@ -24,12 +24,17 @@ void Report::execute() {
 	
 			int full_days = (end - start);
 	
+			if (start_days < 0 && end_days < 0) {
+				std::cout << "Room " << room->get_number() << " will be used for " << full_days + 1 << " days in that period." << std::endl;
+				continue;
+			}
+
 			if(start_days < 0) {
 				full_days += start_days;
 			}
 
 			if(end_days > 0) {
-				full_days +=end_days;
+				full_days -=end_days;
 			}
 
 			std::cout << "Room " << room->get_number() << " will be used for " << full_days + 1 << " days in that period." << std::endl;
