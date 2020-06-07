@@ -1,5 +1,6 @@
 #ifndef AVAILABILITY_H
 #define AVAILABILITY_H
+
 #include "HotelOperation.h"
 #include <ctime>
 #include <time.h> 

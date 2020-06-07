@@ -1,5 +1,3 @@
-#pragma once
-#pragma once
 #ifndef OPEN_H
 #define OPEN_H
 

@@ -1,4 +1,3 @@
-
 #include "OperationException.h"
 
 

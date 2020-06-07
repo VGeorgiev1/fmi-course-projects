@@ -7,10 +7,6 @@ Findem::Findem(Hotel& h)
 
 Room* Findem::create_room(int beds, Date start, Date end, int room_to_miss, int step) {
 	
-	if (step == 2) {
-		throw OperationException("No rooms with the needed beds were found and no moves were possible to be made!");
-	}
-	
 	Room* most_fitting_room = hotel_.get_most_fitting_room(beds, start, end, room_to_miss, false);
 
 	if (most_fitting_room == nullptr) {
@@ -34,9 +30,7 @@ Room* Findem::create_room(int beds, Date start, Date end, int room_to_miss, int 
 			
 		return most_fitting_room;
 	}
-
 	return most_fitting_room;
-
 }
 
 void Findem::execute() {
