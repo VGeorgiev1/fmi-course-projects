@@ -1,0 +1,3 @@
+myList <- list(1, 2, 3, 4)
+double <- mul(#0, #0)
+map(double, myList())
