@@ -196,7 +196,7 @@ Result Engine::recursiveCall(Call* currentCall, std::vector<Call*> inline_args) 
                 return Result("Positional parameter out of bounds!");
             }
 
-            currentCall->nextCalls[i] = inline_args[position];
+            currentCall->nextCalls[i] = new Call(*inline_args[position]);
         }
     }
 
@@ -392,7 +392,6 @@ Result Engine::execute(Call* call) {
 
         for (Call* acall : arguments_validations.val) {
             delete acall;
-            //acall = NULL;
         }
 
         if (res.type == ERROR) {
