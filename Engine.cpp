@@ -1,6 +1,21 @@
 #include "Engine.h"
 #include <cmath>
 
+Engine::~Engine() {
+    if (functions.size() == 0) {
+        return;
+    }
+
+    std::map<std::string, Call*>::iterator it;
+
+    for (it = functions.begin(); it != functions.end(); it++)
+    {
+        //std::cout << "HERE?";
+        delete it->second;
+    }
+
+}
+
 Result Engine::binary_validator(std::vector<Call*> args) {
 
     Result left = execute(args[0]);
@@ -359,7 +374,7 @@ Result Engine::execute(Call* call) {
     std::string name = call->head.val();
 
     if (call->head.get_type() == IDENTITY) {
-        return Result(RESULT, std::vector<Call*>{call});
+        return Result(RESULT, std::vector<Call*>{new Call(*call)});
     }
 
     if (atoms.find(name) != atoms.end()) {
@@ -375,16 +390,19 @@ Result Engine::execute(Call* call) {
 
         Result res = (this->*(atoms[name].func))(arguments_validations);
 
-        //for (Call* acall : arguments_validations.val) {
-        //    delete acall;
-        //}
+        for (Call* acall : arguments_validations.val) {
+            delete acall;
+            //acall = NULL;
+        }
 
         if (res.type == ERROR) {
             return res;
         }
 
         for (Call* ncall : call->nextCalls) {
-            delete ncall;
+            if(ncall != NULL) {
+                delete ncall;
+            }
         }
 
         return Result(RESULT, res.val);

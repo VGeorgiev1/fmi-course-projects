@@ -7,6 +7,7 @@ struct Call {
     bool expectFuncPointer;
     std::vector<Call*> nextCalls;
     double val; // calls can only be evalutaded to single value;
+    //Call(const Call& c) : head(c.head), expectArgument(c.expectArgument), expectFuncPointer(c.expectFuncPointer), nextCalls(c.nextCalls), val(c.val) {};
 };
 struct NCall {
     Token head;

@@ -4,6 +4,8 @@
 #include "Result.h"
 #include <map>
 class Engine {
+public:
+    ~Engine();
 private:
     typedef Result(Engine::* Functor)(std::vector<Call*>); // function pointer type
     typedef Result(Engine::* AtomFunctor)(Result);
