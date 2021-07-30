@@ -11,11 +11,23 @@ Engine::~Engine() {
     for (it = functions.begin(); it != functions.end(); it++)
     {
         //std::cout << "HERE?";
-        delete it->second;
+        recursiveDelete(it->second);
     }
 
 }
-
+void Engine::recursiveDelete(Call* call) {
+    for (int i = 0; i < call->nextCalls.size(); i++) {
+        recursiveDelete(call->nextCalls[i]);
+    }
+    delete call;
+}
+Call* Engine::recursiveCopy(Call* call) {
+    Call* nCall = new Call(*call);
+    for (int i = 0; i < call->nextCalls.size(); i++) {
+        nCall->nextCalls[i] = recursiveCopy(call->nextCalls[i]);
+    }
+    return nCall;
+};
 Result Engine::binary_validator(std::vector<Call*> args) {
 
     Result left = execute(args[0]);
@@ -195,7 +207,7 @@ Result Engine::recursiveCall(Call* currentCall, std::vector<Call*> inline_args) 
             if (position >= inline_args.size()) {
                 return Result("Positional parameter out of bounds!");
             }
-
+            delete currentCall->nextCalls[i];
             currentCall->nextCalls[i] = new Call(*inline_args[position]);
         }
     }
@@ -358,13 +370,19 @@ Result Engine::composite_function(std::string name, Call* inline_call) {
     if (functions.find(name) != functions.end()) {
         Call* call = functions[name];
 
-        Result res = recursiveCall(call->nextCalls[0], inline_call->nextCalls);
+        Call* callCpy = recursiveCopy(new Call(*call));
+
+        Result res = recursiveCall(callCpy, inline_call->nextCalls);
 
         if (res.type == ERROR) {
             return res;
         }
 
-        return execute(call->nextCalls[0]);
+        Result exec_res = execute(callCpy->nextCalls[0]);
+
+        recursiveDelete(callCpy);
+
+        return exec_res;
     }
 
     return Result(name + ": Function not found!");
@@ -398,11 +416,11 @@ Result Engine::execute(Call* call) {
             return res;
         }
 
-        for (Call* ncall : call->nextCalls) {
-            if(ncall != NULL) {
-                delete ncall;
-            }
-        }
+        //for (Call* ncall : call->nextCalls) {
+        //    if(ncall != NULL) {
+        //        delete ncall;
+        //    }
+        //}
 
         return Result(RESULT, res.val);
     }
