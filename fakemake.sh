@@ -1,0 +1,1 @@
+g++ Engine.cpp Lexer.cpp main.cpp Parser.cpp ThisFuncContext.cpp Tokencpp.cpp

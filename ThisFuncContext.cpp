@@ -33,7 +33,7 @@ Output ThisFuncContext::executeCode(std::string program) {
         if (l_e.error != "") {
             return l_e;
         }
-        lastOutput = l_e;
+        lastOutput.val.insert(lastOutput.val.end(), l_e.val.begin(), l_e.val.end());
     }
     return lastOutput;
 }
