@@ -64,9 +64,9 @@ Result Engine::conditional_validator(std::vector<Call*> args) {
     }
 
     std::vector<Call*> resultCalls;
-
+    
     resultCalls.push_back(condition.val[0]);
-
+    //delete args[0];
     resultCalls.insert(resultCalls.end(), args.begin() + 1, args.end());
 
     return Result(RESULT, resultCalls);
@@ -156,21 +156,27 @@ Result Engine::sin(Result operand) {
 
 Result Engine::nand(Result operands) {
     if (operands.val[0]->val == 0.0) {
+        delete operands.val[0];
         return Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), 1 })});
     }
 
     Result right = execute(operands.val[1]);
+    double result = (!operands.val[0]->val || !right.val[0]->val) ? 1.0 : 0.0;
+    
+    delete operands.val[0];
+    delete right.val[0];
 
-    return Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), (!operands.val[0]->val || !right.val[0]->val) ? 1.0 : 0.0 })});
+    return Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), result })});
 
 }
 
 Result Engine::if_(Result operands) {
 
     if (operands.val[0]->val != 0) {
+        delete operands.val[0];
         return execute(operands.val[1]);
     }
-
+    delete operands.val[0];
     return execute(operands.val[2]);
 }
 
@@ -287,8 +293,11 @@ Result Engine::filter(std::vector<Call*> vec) {
             }
 
             if (res_el->val == 1) {
-                res.push_back(listResult.val[i]);
+                res.push_back(listCalls[i]);
+            }else {
+                delete listCalls[i];
             }
+            //delete listCalls[i];
         }
         filter->nextCalls.clear();
     }
@@ -321,6 +330,7 @@ Result Engine::map(std::vector<Call*> vec) {
         for (Call* res_el : r.val) {
             res.push_back(res_el);
         }
+        delete listCalls[i];
         mapper->nextCalls.clear();
     }
 
@@ -370,9 +380,18 @@ Result Engine::composite_function(std::string name, Call* inline_call) {
     if (functions.find(name) != functions.end()) {
         Call* call = functions[name];
 
-        Call* callCpy = recursiveCopy(new Call(*call));
+        Call* callCpy = recursiveCopy(call);
 
-        Call* fullCpy = recursiveCopy(callCpy);
+        for (int i = 0; i < inline_call->nextCalls.size(); i++) {
+            if (inline_call->nextCalls[i]->head.get_type() != IDENTITY) {
+                Result inline_call_res = execute(inline_call->nextCalls[i]);
+                
+                recursiveDelete(inline_call->nextCalls[i]);
+                inline_call->nextCalls.erase(inline_call->nextCalls.begin() + i);
+                
+                inline_call->nextCalls.insert(inline_call->nextCalls.begin() + i, inline_call_res.val.begin(), inline_call_res.val.end());
+            }
+        }
 
         Result res = recursiveCall(callCpy, inline_call->nextCalls);
 
@@ -382,9 +401,7 @@ Result Engine::composite_function(std::string name, Call* inline_call) {
 
         Result exec_res = execute(callCpy->nextCalls[0]);
 
-        //srecursiveDelete(inline_call);
-        delete callCpy;
-        recursiveDelete(fullCpy);
+        recursiveDelete(callCpy);
 
         return exec_res;
     }
@@ -411,9 +428,11 @@ Result Engine::execute(Call* call) {
         }
 
         Result res = (this->*(atoms[name].func))(arguments_validations);
-
-        for (Call* acall : arguments_validations.val) {
-            delete acall;
+        
+        if (name != "if" && name != "nand") {
+            for (Call* acall : arguments_validations.val) {
+                delete acall;
+            }
         }
 
         if (res.type == ERROR) {
