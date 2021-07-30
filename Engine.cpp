@@ -156,7 +156,7 @@ Result Engine::sin(Result operand) {
 
 Result Engine::nand(Result operands) {
     if (operands.val[0]->val == 0.0) {
-        delete operands.val[0];
+        delete operands.val[0]; 
         return Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), 1 })});
     }
 
@@ -277,7 +277,7 @@ Result Engine::filter(std::vector<Call*> vec) {
     }
     std::vector<Call*> listCalls = listResult.val;
 
-    for (int i = 1; i < listCalls.size(); i++) {
+    for (int i = 0; i < listCalls.size(); i++) {
 
         filter->nextCalls.push_back(listCalls[i]);
         Result r = execute(filter);
@@ -297,7 +297,7 @@ Result Engine::filter(std::vector<Call*> vec) {
             }else {
                 delete listCalls[i];
             }
-            //delete listCalls[i];
+            delete res_el;
         }
         filter->nextCalls.clear();
     }
