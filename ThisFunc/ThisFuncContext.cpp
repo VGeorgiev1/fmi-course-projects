@@ -6,17 +6,15 @@ ThisFuncContext::ThisFuncContext(Parser p) : parser(p) {};
 
 Output ThisFuncContext::input(std::string in) {
     parser.get_lex().set_current_expression(in);
-    Result* res = parser.parse();
-    if (res->type == ERROR) {
-        std::string err = res->error;
-        delete res;
-        return Output({ std::vector<double>(), err });
+    Result res = parser.parse();
+    if (res.type == ERROR) {
+        return Output({ std::vector<double>(), res.error });
     }
     else {
         std::vector<double> identities;
 
-        for (Call* c : res->val) {
-            identities.push_back(c->val);
+        for (Call c : res.val) {
+            identities.push_back(c.val);
         }
 
         return Output({ identities, "" });

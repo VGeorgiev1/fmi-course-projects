@@ -1,160 +1,150 @@
 #include "Engine.h"
 #include <cmath>
 
-Result* Engine::binary_validator(std::vector<Call*> args) {
+Result Engine::binary_validator(std::vector<Call> args) {
 
-    Result* left = execute(args[0]);
-    Result* right = execute(args[1]);
+    Result left = execute(args[0]);
+    Result right = execute(args[1]);
 
-    if (left->type == ERROR) {
+    if (left.type == ERROR) {
         return left;
     }
-    if (right->type == ERROR) {
+    if (right.type == ERROR) {
         return right;
     }
 
-    if (left->val.size() != 1 || right->val.size() != 1 ||
-        left->val[0]->head.get_type() != IDENTITY ||
-        right->val[0]->head.get_type() != IDENTITY) {
+    if (left.val.size() != 1 || right.val.size() != 1 ||
+        left.val[0].head.get_type() != IDENTITY ||
+        right.val[0].head.get_type() != IDENTITY) {
 
-        return new Result("Function value not determined!");
+        return Result("Function value not determined!");
     }
 
-    Call* left_eval = left->val[0];
-    Call* right_eval = right->val[0];
-
-    delete left;
-    delete right;
-
-    return new Result(RESULT, std::vector<Call*>{ left_eval, right_eval });
+    return Result(RESULT, std::vector<Call>{ left.val[0], right.val[0] });
 }
 
 // This validator is for atoms that dont need to execute all of their arguments in order to return result
 // Only the first arguments needs to be evaluated so the underlying atom can make decision for its evaluation
-Result* Engine::conditional_validator(std::vector<Call*> args) {
+Result Engine::conditional_validator(std::vector<Call> args) {
     if (args.size() <= 1) {
-        return new Result("Not anough arguments!");
+        return Result("Not anough arguments!");
     }
 
-    Result* condition = execute(args[0]);
+    Result condition = execute(args[0]);
 
-    if (condition->type == ERROR) {
+    if (condition.type == ERROR) {
         return condition;
     }
 
-    std::vector<Call*> resultCalls;
+    std::vector<Call> resultCalls;
 
-    resultCalls.push_back(condition ->val[0]);
+    resultCalls.push_back(condition.val[0]);
 
     resultCalls.insert(resultCalls.end(), args.begin() + 1, args.end());
 
-    return new Result(RESULT, resultCalls);
+    return Result(RESULT, resultCalls);
 
 }
 
-Result* Engine::unary_validator(std::vector<Call*> args) {
+Result Engine::unary_validator(std::vector<Call> args) {
     if (args.size() != 1) {
-        return new Result("Not anough arguments!");
+        return Result("Not anough arguments!");
     }
 
-    Result* left = execute(args[0]);
+    Result left = execute(args[0]);
 
-    if (left->val.size() != 1 || left->val[0]->head.get_type() != IDENTITY) {
-        return new Result("Result of function is not determined!");
+    if (left.val.size() != 1 || left.val[0].head.get_type() != IDENTITY) {
+        return Result("Result of function is not determined!");
     };
 
     return left;
 }
 
-Result* Engine::add(Result* operands) {
+Result Engine::add(Result operands) {
 
-    double res = operands->val[0]->val + operands->val[1]->val;
+    double res = operands.val[0].val + operands.val[1].val;
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), res })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), res })});
 }
 
-Result* Engine::sub(Result* operands) {
+Result Engine::sub(Result operands) {
 
-    double res = operands->val[0]->val - operands->val[1]->val;
+    double res = operands.val[0].val - operands.val[1].val;
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), res })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), res })});
 }
 
-Result* Engine::mul(Result* operands) {
+Result Engine::mul(Result operands) {
 
-    double res = operands->val[0]->val * operands->val[1]->val;
+    double res = operands.val[0].val * operands.val[1].val;
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), res })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), res })});
 }
 
-Result* Engine::div(Result* operands) {
+Result Engine::div(Result operands) {
 
-    if (operands->val[0]->val == 0) {
-        return new Result("div: Division by 0!");
+    if (operands.val[1].val == 0) {
+        return Result("div: Division by 0!");
     }
 
-    double res = operands->val[0]->val / operands->val[1]->val;
+    double res = operands.val[0].val / operands.val[1].val;
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), res })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), res })});
 }
 
-Result* Engine::pow(Result* operands) {
-    double result = operands->val[0]->val;
+Result Engine::pow(Result operands) {
+    double result = operands.val[0].val;
 
-    for (int i = 0; i < operands->val[1]->val; i++) {
+    for (int i = 0; i < operands.val[1].val; i++) {
         result *= result;
     }
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false,false, std::vector<Call*>(), result })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false,false, std::vector<Call>(), result })});
 }
 
-Result* Engine::eq(Result* operands) {
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), (operands->val[0]->val == operands->val[1]->val) ? 1.0 : 0.0 })});
+Result Engine::eq(Result operands) {
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), (operands.val[0].val == operands.val[1].val) ? 1.0 : 0.0 })});
 }
 
-Result* Engine::le(Result* operands) {
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false,false, std::vector<Call*>(), (operands->val[0]->val <= operands->val[1]->val ? 1.0 : 0.0) })});
+Result Engine::le(Result operands) {
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false,false, std::vector<Call>(), (operands.val[0].val <= operands.val[1].val ? 1.0 : 0.0) })});
 }
 
-Result* Engine::cos(Result* operand) {
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), std::cos(operand->val[0]->val) })});
+Result Engine::cos(Result operand) {
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), std::cos(operand.val[0].val) })});
 }
 
-Result* Engine::sqrt(Result* operands) {
+Result Engine::sqrt(Result operands) {
 
-    if (operands->val[0]->val < 0) {
-        return new Result("sqrt: Cant take square root of negative numbers!");
+    if (operands.val[0].val < 0) {
+        return Result("sqrt: Cant take square root of negative numbers!");
     }
 
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), std::sqrt(operands->val[0]->val) })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), std::sqrt(operands.val[0].val) })});
 }
 
-Result* Engine::sin(Result* operand) {
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), std::sin(operand->val[0]->val) })});
+Result Engine::sin(Result operand) {
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), std::sin(operand.val[0].val) })});
 }
 
-Result* Engine::nand(Result* operands) {
-    if (operands->val[0]->val == 0.0) {
-        return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), 1 })});
+Result Engine::nand(Result operands) {
+    if (operands.val[0].val == 0.0) {
+        return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), 1 })});
     }
 
-    Result* right = execute(operands->val[1]);
+    Result right = execute(operands.val[1]);
 
-    Call* right_eval = right->val[0];
-
-    delete right;
-
-    return new Result(RESULT, std::vector<Call*>{new Call({ Token(IDENTITY,"id"), false, false, std::vector<Call*>(), (!operands->val[0]->val || !right_eval->val) ? 1.0 : 0.0 })});
+    return Result(RESULT, std::vector<Call>{Call({ Token(IDENTITY,"id"), false, false, std::vector<Call>(), (!operands.val[0].val || !right.val[0].val) ? 1.0 : 0.0 })});
 
 }
 
-Result* Engine::if_(Result* operands) {
+Result Engine::if_(Result operands) {
 
-    if (operands->val[0]->val != 0) {
-        return execute(operands->val[1]);
+    if (operands.val[0].val != 0) {
+        return execute(operands.val[1]);
     }
 
-    return execute(operands->val[2]);
+    return execute(operands.val[2]);
 }
 
 void Engine::set_up_atoms() {
@@ -181,29 +171,27 @@ void Engine::set_up_atoms() {
     lambdas["tail"] = Lambda({ &Engine::tail, false, 1 });
 }
 
-Result* Engine::recursiveCall(Call* currentCall, std::vector<Call*> inline_args) {
+Result Engine::recursiveCall(Call& currentCall, std::vector<Call> inline_args) {
 
-    for (int i = 0; i < currentCall->nextCalls.size(); i++) {
-        if (currentCall->nextCalls[i]->head.get_type() == POSITION_PARAMETER) {
-            int position = std::stoi(currentCall->nextCalls[i]->head.val().substr(1));
+    for (int i = 0; i < currentCall.nextCalls.size(); i++) {
+        if (currentCall.nextCalls[i].head.get_type() == POSITION_PARAMETER) {
+            int position = std::stoi(currentCall.nextCalls[i].head.val().substr(1));
 
             if (position >= inline_args.size()) {
-                return new Result("Positional parameter out of bounds!");
+                return Result("Positional parameter out of bounds!");
             }
 
-            delete currentCall->nextCalls[i];
-
-            currentCall->nextCalls[i] = inline_args[position];
+            currentCall.nextCalls[i] = inline_args[position];
         }
     }
 
-    for (int i = 0; i < currentCall->nextCalls.size(); i++) {
-        if (currentCall->nextCalls[i]->head.get_type() == FUNC) {
-            recursiveCall(currentCall->nextCalls[i], inline_args);
+    for (int i = 0; i < currentCall.nextCalls.size(); i++) {
+        if (currentCall.nextCalls[i].head.get_type() == FUNC) {
+            recursiveCall(currentCall.nextCalls[i], inline_args);
         }
     }
 
-    return new Result(RESULT, std::vector<Call*>());
+    return Result(RESULT, std::vector<Call>());
 }
 Engine::Engine() {
     set_up_atoms();
@@ -223,201 +211,193 @@ bool Engine::already_defined(std::string name) {
     }
     return false;
 }
-Result* Engine::list(std::vector<Call*> vec) {
+Result Engine::list(std::vector<Call> vec) {
     ResultTypes type;
-    std::vector<Call*> val;
-    for (Call* c : vec) {
-        Result* res = execute(c);
+    std::vector<Call> val;
+    for (Call c : vec) {
+        Result res = execute(c);
 
-        if (res->type == ERROR) {
+        if (res.type == ERROR) {
             return res;
         }
 
-        for (Call* c : res->val) {
-            if (c->head.get_type() != IDENTITY) {
-                return new Result("list: expects number as argument");
+        for (Call c : res.val) {
+            if (c.head.get_type() != IDENTITY) {
+                return Result("list: expects number as argument");
             }
             val.push_back(c);
         }
     }
 
-    return new Result(RESULT, val);
+    return Result(RESULT, val);
 }
 
-Result* Engine::filter(std::vector<Call*> vec) {
-    std::vector<Call*> res;
-    Call* filter = vec[0];
+Result Engine::filter(std::vector<Call> vec) {
+    std::vector<Call> res;
+    Call filter = vec[0];
 
-    Call* list = vec[1];
+    Call list = vec[1];
 
-    Result* listResult = execute(list);
-    if (listResult->type == ERROR) {
+    Result listResult = execute(list);
+    if (listResult.type == ERROR) {
         return listResult;
     }
-    std::vector<Call*> listCalls = listResult->val;
+    std::vector<Call> listCalls = listResult.val;
 
     for (int i = 1; i < listCalls.size(); i++) {
 
-        filter->nextCalls.push_back(listCalls[i]);
-        Result* r = execute(filter);
+        filter.nextCalls.push_back(listCalls[i]);
+        Result r = execute(filter);
 
-        if (r->type == ERROR) {
+        if (r.type == ERROR) {
             return r;
         }
 
-        for (Call* res_el : r->val) {
+        for (Call res_el : r.val) {
 
-            if (res_el->val != 0 && res_el->val != 1) {
-                return new Result("Invalid filter function!");
+            if (res_el.val != 0 && res_el.val != 1) {
+                return Result("Invalid filter function!");
             }
 
-            if (res_el->val == 1) {
-                res.push_back(listResult->val[i]);
+            if (res_el.val == 1) {
+                res.push_back(listResult.val[i]);
             }
         }
-        filter->nextCalls.clear();
+        filter.nextCalls.clear();
     }
 
-    return new Result(RESULT, res);
+    return Result(RESULT, res);
 }
 
-Result* Engine::map(std::vector<Call*> vec) {
-    std::vector<Call*> res;
+Result Engine::map(std::vector<Call> vec) {
+    std::vector<Call> res;
 
-    Call* mapper = vec[0];
+    Call mapper = vec[0];
 
-    Call* list = vec[1];
+    Call list = vec[1];
 
-    Result* listResult = execute(list);
+    Result listResult = execute(list);
 
-    if (listResult->type == ERROR) {
+    if (listResult.type == ERROR) {
         return listResult;
     }
 
-    std::vector<Call*> listCalls = listResult->val;
+    std::vector<Call> listCalls = listResult.val;
 
     for (int i = 0; i < listCalls.size(); i++) {
-        mapper->nextCalls.push_back(listCalls[i]);
-        Result* r = execute(mapper);
-        if (r->type == ERROR) {
+        mapper.nextCalls.push_back(listCalls[i]);
+        Result r = execute(mapper);
+        if (r.type == ERROR) {
             return r;
         }
 
-        for (Call* res_el : r->val) {
+        for (Call res_el : r.val) {
             res.push_back(res_el);
         }
-        mapper->nextCalls.clear();
+        mapper.nextCalls.clear();
     }
 
-    return new Result(RESULT, res);
+    return Result(RESULT, res);
 }
-Result* Engine::head(std::vector<Call*> vec) {
+Result Engine::head(std::vector<Call> vec) {
 
     if (vec.size() == 0) {
-        return new Result("HEAD: Not enough elements in the list!");
+        return Result("HEAD: Not enough elements in the list!");
     }
 
-    Result* res = execute(vec[0]);
+    Result res = execute(vec[0]);
 
-    if (res->type == ERROR) {
+    if (res.type == ERROR) {
         return res;
     }
 
-    res->type = RESULT;
-
-    return res;
+    return Result(RESULT, std::vector<Call>{ res.val[0] });
 }
-Result* Engine::tail(std::vector<Call*> vec) {
-    std::vector<Call*> res;
+Result Engine::tail(std::vector<Call> vec) {
+    std::vector<Call> res;
 
     if (vec.size() == 0) {
-        return new Result("ail: Not enough elements in the list!");
+        return { "tail: Not enough elements in the list!" };
     }
 
-    Result* listResult = execute(vec[0]);
+    Result listResult = execute(vec[0]);
 
-    for (int i = 1; i < listResult->val.size(); i++) {
+    for (int i = 1; i < listResult.val.size(); i++) {
 
-        Result* r = execute(listResult->val[i]);
+        Result r = execute(listResult.val[i]);
 
-        if (r->type == ERROR) {
+        if (r.type == ERROR) {
             return r;
         }
 
-        res.push_back(r->val[0]);
+        res.push_back(r.val[0]);
     }
 
-    return new Result({ RESULT, res });
+    return { RESULT, res };
 }
-void Engine::set_function(std::string name, Call* tree) {
+void Engine::set_function(std::string name, Call& tree) {
     functions[name] = tree;
 }
 
-Result* Engine::composite_function(std::string name, Call* inline_call) {
+Result Engine::composite_function(std::string name, Call& inline_call) {
     if (functions.find(name) != functions.end()) {
-        Call* call = functions[name];
+        Call call = functions[name];
 
-        Result* res = recursiveCall(call->nextCalls[0], inline_call->nextCalls);
+        Result res = recursiveCall(call.nextCalls[0], inline_call.nextCalls);
 
-        if (res->type == ERROR) {
+        if (res.type == ERROR) {
             return res;
         }
 
-        delete res;
-
-        return execute(call->nextCalls[0]);
+        return execute(call.nextCalls[0]);
     }
 
-    return new Result(name + ": Function not found!");
+    return Result(name + ": Function not found!");
 }
 
-Result* Engine::execute(Call* call) {
-    std::string name = call->head.val();
+Result Engine::execute(Call call) {
+    std::string name = call.head.val();
 
-    if (call->head.get_type() == IDENTITY) {
-        return new Result(RESULT, std::vector<Call*>{call});
+    if (call.head.get_type() == IDENTITY) {
+        return Result(RESULT, std::vector<Call>{call});
     }
 
     if (atoms.find(name) != atoms.end()) {
-        if (call->nextCalls.size() != atoms[name].number_of_args) {
-            return new Result(name + ": Invalid number of arguments!");
+        if (call.nextCalls.size() != atoms[name].number_of_args) {
+            return Result(name + ": Invalid number of arguments!");
         }
 
-        Result* arguments_validations = (this->*(atoms[name].validator))(call->nextCalls);
+        Result arguments_validations = (this->*(atoms[name].validator))(call.nextCalls);
 
-        if (arguments_validations->type == ERROR) {
+        if (arguments_validations.type == ERROR) {
             return arguments_validations;
         }
 
-        Result* res = (this->*(atoms[name].func))(arguments_validations);
+        Result res = (this->*(atoms[name].func))(arguments_validations);
 
-        if (res->type == ERROR) {
+        if (res.type == ERROR) {
             return res;
         }
 
-        delete arguments_validations;
-        
-        res->type = RESULT;
-
-        return res;
+        return Result(RESULT, res.val);
     }
     else if (lambdas.find(name) != lambdas.end()) {
         Result result;
 
-        Call* c = call;
+        Call c = call;
 
         if (name != "list") {
-            if (call->nextCalls.size() != lambdas[name].number_of_args) {
-                return new Result(name + ": Invalid number of parameters!");
+            if (call.nextCalls.size() != lambdas[name].number_of_args) {
+                return Result(name + ": Invalid number of parameters!");
             }
         }
 
-        return (this->*(lambdas[name].func))(c->nextCalls);
+        return (this->*(lambdas[name].func))(c.nextCalls);
 
     }
     else {
         return composite_function(name, call);
     }
 
-    return new Result("Uknown token `" + call->head.val() + "` +error!");
+    return Result("Uknown token `" + call.head.val() + "` +error!");
 }

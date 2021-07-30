@@ -12,9 +12,9 @@ public:
 
     Parser(Parser&& obj);
 
-    Result* tree_parse(Call* currentRoot);
+    Result tree_parse(Call& currentRoot);
 
-    Result* parse();
+    Result parse();
 
     Lexer& get_lex();
 };

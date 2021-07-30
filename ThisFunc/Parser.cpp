@@ -16,7 +16,7 @@ Parser::Parser(Parser&& obj) {
     engine = obj.engine;
 }
 
-Result* Parser::tree_parse(Call* currentRoot) {
+Result Parser::tree_parse(Call& currentRoot) {
 
     int argumentIdx = 0;
     bool expectPointer = false;
@@ -26,69 +26,67 @@ Result* Parser::tree_parse(Call* currentRoot) {
         Token t = lex.get_next_token();
 
         if (t.get_type() == ERR) {
-            return new Result("Uknown token: " + t.val());
+            return Result("Uknown token: " + t.val());
         }
 
         if (t.get_type() == FUNC) {
             std::string funcName = t.val();
 
-            if (currentRoot->head.val() == "") {
-                currentRoot->head.set_val(t.val());
+            if (currentRoot.head.val() == "") {
+                currentRoot.head.set_val(t.val());
                 if (engine.expectPointer(t.val())) {
-                    currentRoot->expectFuncPointer = true;
+                    currentRoot.expectFuncPointer = true;
                 }
             }
             else {
 
-                if (currentRoot->expectFuncPointer) {
-                    currentRoot->expectFuncPointer = false;
-                    currentRoot->nextCalls.push_back(new Call({ t, false, false, std::vector<Call*>(), 0 }));
+                if (currentRoot.expectFuncPointer) {
+                    currentRoot.expectFuncPointer = false;
+                    currentRoot.nextCalls.push_back(Call({ t, false, false, std::vector<Call>(), 0 }));
                     continue;
                 }
                 expectPointer = engine.expectPointer(t.val());
 
-                currentRoot->nextCalls.push_back(new Call({ t, false, expectPointer, std::vector<Call*>(), 0 }));
+                currentRoot.nextCalls.push_back(Call({ t, false, expectPointer, std::vector<Call>(), 0 }));
 
             }
 
             t = lex.get_next_token();
 
             if (t.val() != "(" && t.get_type() != ASSIGN) {
-                return new Result("Invalid syntax!");
+                return Result("Invalid syntax!");
             }
 
             if (t.get_type() == ASSIGN) {
-
                 if (engine.already_defined(funcName)) {
-                    return new Result("Function " + funcName + " already defined!");
+                    return Result("Function " + funcName + " already defined!");
                 }
-
-                Result* res = tree_parse(currentRoot);
-                if (res->type == ERROR) {
+                Result res = tree_parse(currentRoot);
+                if (res.type == ERROR) {
                     return res;
                 }
             }
-            else if (currentRoot->nextCalls.size() > 0) {
+            else if (currentRoot.nextCalls.size() > 0) {
                 //currentRoot.nextCalls[currentRoot.nextCalls.size() - 1].expectArgument = !expectPointer;
-                Result* res = tree_parse(currentRoot->nextCalls[currentRoot->nextCalls.size() - 1]);
+                Result res = tree_parse(currentRoot.nextCalls[currentRoot.nextCalls.size() - 1]);
 
-                if (res->type == ERROR) {
+                if (res.type == ERROR) {
                     return res;
                 }
-                else if (res->type == RESULT) {
-                    currentRoot->nextCalls.pop_back();
-                    for (Call* r : res->val) {
-                        currentRoot->nextCalls.push_back(r);
+                else if (res.type == RESULT) {
+                    currentRoot.nextCalls.pop_back();
+                    for (Call r : res.val) {
+                        currentRoot.nextCalls.push_back(r);
                     }
                 }
-                currentRoot->expectArgument = false;
+                currentRoot.expectArgument = false;
             }
         }
 
         if (t.get_type() == LITERAL || t.get_type() == POSITION_PARAMETER) {
 
             if (t.get_type() == POSITION_PARAMETER) {
-                currentRoot->nextCalls.push_back(new Call({ t, false, false, std::vector<Call*>(), 0 }));
+                currentRoot.nextCalls.push_back(Call({ t, false, false, std::vector<Call>(), 0 }));
             }
             else {
                 double d_val = 0;
@@ -97,56 +95,57 @@ Result* Parser::tree_parse(Call* currentRoot) {
                     d_val = std::stod(t.val());
                 }
                 catch (std::invalid_argument e) {
-                    return new Result("Invalid argument!");
+                    return Result("Invalid argument!");
                 }
 
                 Token identity = Token(IDENTITY, "id");
 
-                currentRoot->nextCalls.push_back(new Call({ identity, false, false, std::vector<Call*>(), d_val }));
+                currentRoot.nextCalls.push_back(Call({ identity, false, false, std::vector<Call>(), d_val }));
             }
 
-            currentRoot->expectArgument = false;
+            currentRoot.expectArgument = false;
         }
 
         if (t.get_type() == DELIMITER) {
             if (t.val() == "") {
-                return new Result("Paranthesis missmatch!");
+                return Result("Paranthesis missmatch!");
             }
             if (t.val() == ",") {
-                if (currentRoot->expectArgument) {
-                    return new Result("Expected argument got: ,");
+                if (currentRoot.expectArgument) {
+                    return Result("Expected argument got: ,");
                 }
-                if (!currentRoot->expectArgument) {
-                    currentRoot->expectArgument = true;
+                if (!currentRoot.expectArgument) {
+                    currentRoot.expectArgument = true;
                 }
                 argumentIdx++;
             }
 
             if (t.val() == ")") {
-                if (currentRoot->expectArgument) {
-                    return new Result("Argument missmatch!");
+                if (currentRoot.expectArgument) {
+                    return Result("Argument missmatch!");
                 }
 
-                currentRoot->expectArgument = false;
+                Result res(VOID, std::vector<Call>());
 
-                return new Result(VOID, std::vector<Call*>());
+                currentRoot.expectArgument = false;
+
+                return res;
             }
         }
     }
-    return new Result(VOID, std::vector<Call*>());
+    return Result(VOID, std::vector<Call>());
 }
 
-Result* Parser::parse() {
-    Call* node = new Call({ Token(FUNC, ""), false, false, std::vector<Call*>(), 0 });
-    
-    Result* res = tree_parse(node);
+Result Parser::parse() {
+    Call node = Call({ Token(FUNC, ""), false, false, std::vector<Call>(), 0 });
+    Result res = tree_parse(node);
 
-    if (res->type == ERROR) {
+    if (res.type == ERROR) {
         return res;
     }
 
     if (lex.isDeclaration()) {
-        engine.set_function(node->head.val(), node);
+        engine.set_function(node.head.val(), node);
         return res;
     }
     else {
