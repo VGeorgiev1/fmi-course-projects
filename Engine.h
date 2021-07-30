@@ -25,9 +25,6 @@ private:
         int number_of_args;
     };
 
-    void recursiveDelete(Call* call);
-    Call* recursiveCopy(Call* call);
-
     typedef std::map<std::string, Atom> Atoms;
     typedef std::map<std::string, Lambda> Lambdas;
     std::map<std::string, Call*> functions;

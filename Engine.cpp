@@ -10,13 +10,7 @@ Engine::~Engine() {
 
     for (it = functions.begin(); it != functions.end(); it++)
     {
-<<<<<<< HEAD
-        //std::cout << "HERE?";
         recursiveDelete(it->second);
-=======
-        recursiveDelete(it->second);
-        //delete it->second;
->>>>>>> 573726c4059d2eb1b6122e3cc1ac6ad46b888250
     }
 
 }
@@ -376,13 +370,9 @@ Result Engine::composite_function(std::string name, Call* inline_call) {
     if (functions.find(name) != functions.end()) {
         Call* call = functions[name];
 
-<<<<<<< HEAD
         Call* callCpy = recursiveCopy(new Call(*call));
-=======
-        Call* callCpy = new Call(*call);
-        
+
         Call* fullCpy = recursiveCopy(callCpy);
->>>>>>> 573726c4059d2eb1b6122e3cc1ac6ad46b888250
 
         Result res = recursiveCall(callCpy, inline_call->nextCalls);
 
@@ -391,15 +381,10 @@ Result Engine::composite_function(std::string name, Call* inline_call) {
         }
 
         Result exec_res = execute(callCpy->nextCalls[0]);
-<<<<<<< HEAD
 
-        recursiveDelete(callCpy);
-=======
-        
         //srecursiveDelete(inline_call);
         delete callCpy;
         recursiveDelete(fullCpy);
->>>>>>> 573726c4059d2eb1b6122e3cc1ac6ad46b888250
 
         return exec_res;
     }
@@ -435,19 +420,6 @@ Result Engine::execute(Call* call) {
             return res;
         }
 
-<<<<<<< HEAD
-        //for (Call* ncall : call->nextCalls) {
-        //    if(ncall != NULL) {
-        //        delete ncall;
-        //    }
-        //}
-=======
-        // for (Call* ncall : call->nextCalls) {
-        //     if(ncall != NULL) {
-        //         delete ncall;
-        //     }
-        // }
->>>>>>> 573726c4059d2eb1b6122e3cc1ac6ad46b888250
 
         return Result(RESULT, res.val);
     }
