@@ -2,9 +2,12 @@
 #include <vector>
 #include "Call.h"
 #include "Result.h"
+#include <iostream>
 #include <map>
 class Engine {
 public:
+    void recursiveDelete(Call* call);
+    Call* recursiveCopy(Call* call);
     ~Engine();
 private:
     typedef Result(Engine::* Functor)(std::vector<Call*>); // function pointer type

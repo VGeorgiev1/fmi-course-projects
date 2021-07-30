@@ -1,5 +1,6 @@
 #pragma once
 #include "Token.h"
+#include <math.h>
 class Lexer {
     int pos;
     std::string current_expression;

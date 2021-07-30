@@ -150,7 +150,7 @@ Result Parser::parse() {
     }
     else {
         Result r = engine.execute(node);
-        delete node;
+        engine.recursiveDelete(node);
         return r;
     }
 }
